@@ -34,7 +34,7 @@ class PHPUi_CSS_Item
 	public function addProperties($properties)
 	{
 		if(!is_array($properties))
-			throw new PHPui_Exception('Array expected but ');
+			throw new PHPui_Exception('Array expected but ' . gettype($properties) . ' given');
 			
 		foreach($properties as $property => $value)
 			$this->addProperty($property, $value);
@@ -78,14 +78,22 @@ class PHPUi_CSS_Item
 		if($type == PHPUi_CSS::FILE)
 			$string .= $this->_selector . " { ";
 		
-		$map = array_map(create_function('$key, $value', 'return $key." : ".$value."; ";'), 
-						array_keys($this->_properties), array_values($this->_properties));
-		$string .= implode($map);
+		$string .= implode(array_map(create_function('$key, $value', 'return $key." : ".$value."; ";'), 
+						array_keys($this->_properties), array_values($this->_properties)));
 						
 		if($type == PHPUi_CSS::FILE)
 			$string .= $this->_selector . " } ";
 		
 		return $string;
 	}
+    
+    public function toJson()
+    {
+        if(!extension_loaded('json'))
+            throw new PHPui_Exception('JSON extension not loaded.');
+            
+        return json_encode($this->_properties);         
+    }
 	
 }
+
