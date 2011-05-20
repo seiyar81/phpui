@@ -19,6 +19,12 @@
 <?php 
 	echo $file->flush();
 ?>
+    <br />
+	<br />
+<?php 
+	foreach($file->getItems() as $item)
+         echo $item->toJson()."\n";
+?>
 	<br />
 	<br />
 	<body style="<?php echo $file->flush(PHPUi_CSS::INLINE); ?>">

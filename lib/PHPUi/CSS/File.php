@@ -44,6 +44,11 @@ class PHPUi_CSS_File
 		}
 		return false;
 	}
+    
+    public function getItems()
+	{
+		return $this->_items;
+	}
 	
 	public function hasItem($selector)
 	{

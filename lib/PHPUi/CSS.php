@@ -1,6 +1,6 @@
 <?php
 
-final class PHPUi_CSS
+final abstract class PHPUi_CSS
 {
 	
 	const INLINE = 1;

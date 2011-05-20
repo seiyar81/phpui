@@ -82,7 +82,7 @@ class PHPUi_CSS_Item
 						array_keys($this->_properties), array_values($this->_properties)));
 						
 		if($type == PHPUi_CSS::FILE)
-			$string .= $this->_selector . " } ";
+			$string .= " } \n";
 		
 		return $string;
 	}
