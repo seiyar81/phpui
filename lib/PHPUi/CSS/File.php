@@ -10,21 +10,17 @@ class PHPUi_CSS_File
     protected $_name;
     
     /**
-     * File path
-     * @var array
-     */
-    protected $_path;
-    
-    /**
      * CSS Items
      * @var array
      */
     protected $_items;
     
-	public function __construct($name = '', $path = '')
+	public function __construct($name = null)
 	{
 		$this->_name = $name;
-		$this->_path = $path;
+		
+		if(null !== $this->_name)
+			$this->parseFile($this->_name);
 	}
     
 	public function addItem(PHPUi_CSS_Item $item)
@@ -62,6 +58,47 @@ class PHPUi_CSS_File
 				echo $item->toString($type);
 			}
 		}
+	}
+	
+	public function parseFile($filename) {
+		if(!file_exists($filename)) {
+			throw new PHPUi_Exception("File doesn't exist.");
+		} else {
+		   $lines = file($filename);
+		   foreach ($lines as $line_num => $line) {
+		      $cssstyles .= trim($line);
+		   }
+		  
+		  $tok = strtok($cssstyles, "{}");
+
+		  $sarray = array();
+
+		  $spos = 0;
+		  
+		  while ($tok !== false) {
+			   $sarray[$spos] = $tok;
+			   $spos++; 
+			   $tok = strtok("{}");
+		  }
+
+		  for($i = 0; $i < count($sarray); $i++) {
+		  		$this->addItem(new PHPUi_CSS_Item($sarray[$i], $this->parseProperties($sarray[++$i])));
+		  }
+		}
+	}
+	
+	private function parseProperties($propertiesToParse)
+	{
+		$properties = array();
+		
+		$associations = explode(';', $propertiesToParse);
+		foreach($associations as $assoc) {
+			list($property, $value) = explode(':', $assoc);
+			if(strlen($property) > 0 && strlen($value) > 0)
+				$properties[$property] = $value;
+		}
+		
+		return $properties;
 	}
 	
 }

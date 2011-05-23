@@ -24,7 +24,7 @@ class PHPUi_CSS_Item
 	public function addProperty($property, $value)
 	{
 		if(!is_string($property) || !is_string($value))
-			throw new PHPui_Exception('Property and value must be strings');
+			throw new PHPUi_Exception('Property and value must be strings');
 			
 		$this->_properties[$property] = $value;	
 		
@@ -34,7 +34,7 @@ class PHPUi_CSS_Item
 	public function addProperties($properties)
 	{
 		if(!is_array($properties))
-			throw new PHPui_Exception('Array expected but ' . gettype($properties) . ' given');
+			throw new PHPUi_Exception('Array expected but ' . gettype($properties) . ' given');
 			
 		foreach($properties as $property => $value)
 			$this->addProperty($property, $value);
@@ -90,7 +90,7 @@ class PHPUi_CSS_Item
     public function toJson()
     {
         if(!extension_loaded('json'))
-            throw new PHPui_Exception('JSON extension not loaded.');
+            throw new PHPUi_Exception('JSON extension not loaded.');
             
         return json_encode($this->_properties);         
     }
