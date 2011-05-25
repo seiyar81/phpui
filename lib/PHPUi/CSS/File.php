@@ -14,12 +14,12 @@ class PHPUi_CSS_File
      * @var array
      */
     protected $_items;
-    
+
 	public function __construct($name = null)
 	{
 		$this->_name = $name;
 		
-		if(null !== $this->_name)
+		if(null !== $this->_name && file_exists($this->_name))
 			$this->parseFile($this->_name);
 	}
     
@@ -57,6 +57,32 @@ class PHPUi_CSS_File
 			foreach($this->_items as $item) {
 				echo $item->toString($type);
 			}
+		}
+	}
+	
+	public function save($type = PHPUi_CSS::FILE) 
+	{
+		if(strlen($this->_name) == 0) {
+			throw new PHPUi_Exception("Filename is empty.");
+		}
+		
+		$content = '';
+		if(count($this->_items)) {
+			foreach($this->_items as $item) {
+				$content .= $item->toString($type) . "\r\n";
+			}
+		}
+		$f = fopen($this->_name, 'w+');
+
+		if(false === $f) {
+			return 'fopen failed';
+		} else {
+			if(false === file_put_contents($this->_name, $content))
+				return 'put contents failed';
+				
+			fclose($f);
+			
+			return 'OK';
 		}
 	}
 	
@@ -101,4 +127,18 @@ class PHPUi_CSS_File
 		return $properties;
 	}
 	
+	
+	/**
+	 * @return the $_name
+	 */
+	public function getName() {
+		return $this->_name;
+	}
+
+	/**
+	 * @param string $name
+	 */
+	public function setName($name) {
+		$this->_name = $name;
+	}
 }
