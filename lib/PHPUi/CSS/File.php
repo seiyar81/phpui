@@ -15,6 +15,10 @@ class PHPUi_CSS_File
      */
     protected $_items;
 
+    /**
+     * New instance of PHPUi_CSS_File with optional name
+     * @param string OPTIONAL $name
+     */
 	public function __construct($name = null)
 	{
 		$this->_name = $name;
@@ -23,34 +27,72 @@ class PHPUi_CSS_File
 			$this->parseFile($this->_name);
 	}
     
+	/**
+	 * 
+	 * Enter description here ...
+	 * @param PHPUi_CSS_Item $item
+	 */
 	public function addItem(PHPUi_CSS_Item $item)
 	{
-		$this->_items[$item->getSelector()] = $item;
+		if(array_key_exists($item->getSelector(), $this->_items)) {
+			$this->_items[$item->getSelector()]->merge($item);
+		} else
+			$this->_items[$item->getSelector()] = $item;
 	}
 	
-	public function removeItem(PHPUi_CSS_Item $item)
+	/**
+	 * Remove given item with provided selector or PHPUi_CSS_Item
+	 * @param mixed $item
+	 */
+	public function removeItem($item)
 	{
-		unset($this->_items[$item->getSelector()]);
+		if($item instanceof PHPUi_CSS_Item)
+			unset($this->_items[$item->getSelector()]);
+		else if(is_string($item))
+			unset($this->_items[$item]);
 	}
 	
+	/**
+	 * Get item woth given selector
+	 * @param string $selector
+	 * @return PHPUi_CSS_Item
+	 */
 	public function getItem($selector)
 	{
 		if(array_key_exists($selector, $this->_items)) {
 			return $this->_items[$selector];
 		}
-		return false;
+		return null;
 	}
     
+	/**
+	 * Return all file items
+	 * @return array 
+	 */
     public function getItems()
 	{
 		return $this->_items;
 	}
 	
-	public function hasItem($selector)
+	/**
+	 * Check if given item already exists
+	 * @param mixed $item
+	 * @return bool 
+	 */
+	public function hasItem($item)
 	{
-		return array_key_exists($selector, $this->_items);
+		if($item instanceof PHPUi_CSS_Item)
+			return array_key_exists($item->getSelector(), $this->_items);
+		else if(is_string($item))
+			return array_key_exists($item, $this->_items);
+		else 
+			return false;
 	}
 	
+	/**
+	 * Flush all the file's content 
+	 * @param int OPTIONAL $type
+	 */
 	public function flush($type = PHPUi_CSS::FILE) 
 	{
 		if(count($this->_items)) {
@@ -60,6 +102,11 @@ class PHPUi_CSS_File
 		}
 	}
 	
+	/**
+	 * Save file's content
+	 * @param int OPTIONAL $type
+	 * @throws PHPUi_Exception
+	 */
 	public function save($type = PHPUi_CSS::FILE) 
 	{
 		if(strlen($this->_name) == 0) {
@@ -75,17 +122,21 @@ class PHPUi_CSS_File
 		$f = fopen($this->_name, 'w+');
 
 		if(false === $f) {
-			return 'fopen failed';
+			return false;
 		} else {
 			if(false === file_put_contents($this->_name, $content))
-				return 'put contents failed';
+				return false;
 				
 			fclose($f);
-			
-			return 'OK';
+			return true;
 		}
 	}
 	
+	/**
+	 * Parse given file and add all the content
+	 * @param unknown_type $filename
+	 * @throws PHPUi_Exception
+	 */
 	public function parseFile($filename) {
 		if(!file_exists($filename)) {
 			throw new PHPUi_Exception("File doesn't exist.");
@@ -108,11 +159,15 @@ class PHPUi_CSS_File
 		  }
 
 		  for($i = 0; $i < count($sarray); $i++) {
-		  		$this->addItem(new PHPUi_CSS_Item($sarray[$i], $this->parseProperties($sarray[++$i])));
+		  		$this->addItem(new PHPUi_CSS_Item(trim($sarray[$i]), $this->parseProperties($sarray[++$i])));
 		  }
 		}
 	}
 	
+	/**
+	 * Parse given string to build an array of properties
+	 * @param string $propertiesToParse
+	 */
 	private function parseProperties($propertiesToParse)
 	{
 		$properties = array();
@@ -121,7 +176,7 @@ class PHPUi_CSS_File
 		foreach($associations as $assoc) {
 			list($property, $value) = explode(':', $assoc);
 			if(strlen($property) > 0 && strlen($value) > 0)
-				$properties[$property] = $value;
+				$properties[trim($property)] = trim($value);
 		}
 		
 		return $properties;
@@ -129,6 +184,7 @@ class PHPUi_CSS_File
 	
 	
 	/**
+	 * Getter for _name property
 	 * @return the $_name
 	 */
 	public function getName() {
@@ -136,6 +192,7 @@ class PHPUi_CSS_File
 	}
 
 	/**
+	 * Setter for _name property
 	 * @param string $name
 	 */
 	public function setName($name) {
