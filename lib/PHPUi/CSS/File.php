@@ -20,6 +20,7 @@ class PHPUi_CSS_File
 	public function __construct($name = null)
 	{
 		$this->_name = $name;
+		$this->_items = array();
 		
 		if(null !== $this->_name && file_exists($this->_name))
 			$this->parseFile($this->_name);
@@ -101,6 +102,20 @@ class PHPUi_CSS_File
 	}
 	
 	/**
+	 * Flush all the file's content and return a string
+	 */
+	public function __toString() 
+	{
+		$string = '';
+		if(count($this->_items)) {
+			foreach($this->_items as $item) {
+				$string .= $item->toString(PHPUi_CSS::FILE);
+			}
+		}
+		return $string;
+	}
+	
+	/**
 	 * Save file's content
 	 * @param int OPTIONAL $type
 	 * @throws PHPUi_Exception
@@ -140,6 +155,7 @@ class PHPUi_CSS_File
 			throw new PHPUi_Exception("File doesn't exist.");
 		} else {
 		   $lines = file($filename);
+		   $cssstyles = '';
 		   foreach ($lines as $line_num => $line) {
 		      $cssstyles .= trim($line);
 		   }
@@ -172,9 +188,13 @@ class PHPUi_CSS_File
 		
 		$associations = explode(';', $propertiesToParse);
 		foreach($associations as $assoc) {
-			list($property, $value) = explode(':', $assoc);
-			if(strlen($property) > 0 && strlen($value) > 0)
-				$properties[trim($property)] = trim($value);
+			$assocArray = explode(':', $assoc);
+			if(count($assocArray) == 2) {
+				$property = $assocArray[0];
+				$value = $assocArray[1];
+				if(strlen($property) > 0 && strlen($value) > 0)
+					$properties[trim($property)] = trim($value);
+			}
 		}
 		
 		return $properties;

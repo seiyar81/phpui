@@ -1,10 +1,12 @@
 <?php
 
-/*
+/**
  * From Doctrine 2.0
  * <http://www.doctrine-project.org>
  */
  
+require_once 'PHPUi/Cache/Storage/Abstract.php';
+
 /**
  * Array cache driver.
  *

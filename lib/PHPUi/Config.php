@@ -6,7 +6,7 @@ final class PHPUi_Config
     /**
      * @var PHPUi_Config Config instance
      */
-     private $_instance = null;
+    private static $_instance = null;
     
     /**
      * @var PHPUi_Cache_Storage cache object
@@ -14,19 +14,19 @@ final class PHPUi_Config
     private $_cache = null;
     
     
-    public function getInstance()
+    public static function getInstance()
     {
-        if(null === $this->_instance) {
-            $this->_instance = new PHPUi_Config();
+        if(null === self::$_instance) {
+            self::$_instance = new PHPUi_Config();
         }
-        return $this->_instance;
+        return self::$_instance;
     }
 
 
     public function setCache(PHPUi_Cache_Storage $cache)
     {
          if(!is_object($cache)) {
-            throw new PHPUi_Exception('Object expected but '.  . gettype($cache) .  .' given');
+            throw new PHPUi_Exception('Object expected but '.  gettype($cache) .' given');
           } else {
             $this->_cache = $cache;   
          }

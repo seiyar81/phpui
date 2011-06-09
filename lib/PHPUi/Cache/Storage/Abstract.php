@@ -1,9 +1,11 @@
+<?php 
 
-/*
+/**
  * From Doctrine 2.0
  * <http://www.doctrine-project.org>
  */
 
+require_once 'PHPUi/Cache/Storage.php';
 
 /**
  * Base class for cache driver implementations.
@@ -17,7 +19,7 @@
 abstract class PHPUi_Cache_Storage_Abstract implements PHPUi_Cache_Storage
 {
     /** @var string The cache id to store the index of cache ids under */
-    private $_cacheIdsIndexId = 'doctrine_cache_ids';
+    private $_cacheIdsIndexId = 'phpui_cache_ids';
 
     /** @var string The namespace to prefix all cache ids with */
     private $_namespace = null;
