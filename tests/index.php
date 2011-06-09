@@ -4,7 +4,6 @@
     require_once '../lib/PHPUi/CSS.php';
 	require_once '../lib/PHPUi/CSS/Item.php';
 	require_once '../lib/PHPUi/CSS/File.php';
-
  
 	$file = new PHPUi_CSS_File('test.css');
 	/*$file->addItem(new PHPUi_CSS_Item('body', array('background-color' => 'green', 

@@ -3,14 +3,12 @@
 final class PHPUi_CSS
 {
 	/**
-	 * Parse type constant, inline
-	 * @var int
+	 * @var int Parse type constant, inline
 	 */
 	const INLINE = 1;
 	
 	/**
-	 * Parse type constant, file
-	 * @var int
+	 * @var int Parse type constant, file
 	 */
 	const FILE = 2;
 	

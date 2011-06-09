@@ -4,14 +4,12 @@ class PHPUi_CSS_Item
 {
 	
     /**
-     * CSS Selector
-     * @var string
+     * @var string CSS Selector
      */
     protected $_selector;
     
     /**
-     * CSS Properties
-     * @var array
+     * @var array CSS Properties
      */
     protected $_properties;
 	

@@ -1,5 +1,9 @@
 <?php
 
+/*
+ * From Zend Framework, Zend_Debug
+ * <http://www.zend.com>
+ */
 
 class PHPUi_Debug 
 {

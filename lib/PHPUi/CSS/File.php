@@ -4,14 +4,12 @@ class PHPUi_CSS_File
 {
 	
     /**
-     * File name
-     * @var string
+     * @var string File name
      */
     protected $_name;
     
     /**
-     * CSS Items
-     * @var array
+     * @var array CSS Items
      */
     protected $_items;
 

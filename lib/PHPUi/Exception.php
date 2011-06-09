@@ -1,5 +1,9 @@
 <?php 
 
+/*
+ * From Zend Framework, Zend_Exception
+ * <http://www.zend.com>
+ */
 
 class PHPUi_Exception extends Exception
 {
