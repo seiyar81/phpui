@@ -71,4 +71,12 @@ class PHPUi_Cache_Storage_Apc extends PHPUi_Cache_Storage_Abstract
     {
         return apc_delete($id);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    protected function _doClear() 
+    {
+        return apc_clear_cache();
+    }
 }

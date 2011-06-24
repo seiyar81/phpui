@@ -40,4 +40,11 @@ interface PHPUi_Cache_Storage
      * @return boolean TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
     function delete($id);
+    
+    /**
+     * Clears all cache entries.
+     * 
+     * @return boolean TRUE if the cache was successfully cleared, FALSE otherwise.
+     */
+    function clear();
 }

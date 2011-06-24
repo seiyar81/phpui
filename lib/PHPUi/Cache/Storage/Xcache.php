@@ -73,17 +73,28 @@ class PHPUi_Cache_Storage_Xcache extends PHPUi_Cache_Storage_Abstract
         return xcache_unset($id);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function _doClear() 
+    {
+        foreach($this->getIds() as $id) {
+              if(!xcache_unset($id))
+                  return false;
+        }
+        return true;
+    }
 
     /**
      * Checks that xcache.admin.enable_auth is Off
      *
-     * @throws \BadMethodCallException When xcache.admin.enable_auth is On
+     * @throws BadMethodCallException When xcache.admin.enable_auth is On
      * @return void
      */
     protected function _checkAuth()
     {
         if (ini_get('xcache.admin.enable_auth')) {
-            throw new \BadMethodCallException('To use all features of \Doctrine\Common\Cache\XcacheCache, you must set "xcache.admin.enable_auth" to "Off" in your php.ini.');
+            throw new BadMethodCallException('To use all features of PHPUi_Cache_Storage_Xcache, you must set "xcache.admin.enable_auth" to "Off" in your php.ini.');
         }
     }
 }

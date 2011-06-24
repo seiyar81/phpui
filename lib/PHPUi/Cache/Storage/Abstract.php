@@ -72,6 +72,14 @@ abstract class PHPUi_Cache_Storage_Abstract implements PHPUi_Cache_Storage
 
         return $this->_doDelete($id);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        return $this->_doClear();
+    }
 
     /**
      * Delete all cache entries.
@@ -204,6 +212,13 @@ abstract class PHPUi_Cache_Storage_Abstract implements PHPUi_Cache_Storage
      * @return boolean TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
     abstract protected function _doDelete($id);
+    
+    /**
+     * Clears all cache entries.
+     * 
+     * @return boolean TRUE if the cache was successfully cleared, FALSE otherwise.
+     */
+    abstract protected function _doClear();
 
     /**
      * Get an array of all the cache ids stored

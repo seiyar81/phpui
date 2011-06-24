@@ -28,13 +28,13 @@ class PHPUi_CSS_Item
 	 * Add or update property with given value
 	 * @param string $property
 	 * @param string $value
-	 * @throws PHPUi_Exception
+	 * @throws PHPUi_Exception_InvalidArgument
 	 * @return $this
 	 */
 	public function addProperty($property, $value)
 	{
 		if(!is_string($property) || !is_string($value))
-			throw new PHPUi_Exception('Property and value must be strings');
+			throw new PHPUi_Exception_InvalidArgument('Property and value must be strings');
 			
 		$this->_properties[$property] = $value;	
 		
@@ -44,13 +44,13 @@ class PHPUi_CSS_Item
 	/**
 	 * Add or update properties with given values
 	 * @param array $properties
-	 * @throws PHPUi_Exception
+	 * @throws PHPUi_Exception_InvalidArgument
 	 * @return $this
 	 */
 	public function addProperties($properties)
 	{
 		if(!is_array($properties))
-			throw new PHPUi_Exception('Array expected but ' . gettype($properties) . ' given');
+			throw new PHPUi_Exception_InvalidArgument('Array expected but ' . gettype($properties) . ' given');
 			
 		foreach($properties as $property => $value)
 			$this->addProperty($property, $value);
@@ -139,6 +139,15 @@ class PHPUi_CSS_Item
 		$this->_selector = $selector;
 	}
 	
+        /**
+         * Print current file
+         * @param int OPTIONAL $type 
+         */
+        public function __toString()
+        {
+            echo $this->toString(PHPUi_CSS::INLINE);
+        }
+        
 	/**
 	 * Build a formated CSS string with selector, properties and values and given type
 	 * @param int OPTIONAL $type
@@ -160,15 +169,23 @@ class PHPUi_CSS_Item
 	}
 	
     /**
+     * Return item's properties and selector into an array
+     */
+    public function toArray()
+    {
+        return array('selector' => $this->_selector, 'properties' => $this->_properties);         
+    }
+        
+    /**
      * Return item's properties encoded to json
-     * @throws PHPUi_Exception
+     * @throws PHPUi_Exception_ExtensionNotLoaded
      */
     public function toJson()
     {
         if(!extension_loaded('json'))
-            throw new PHPUi_Exception('JSON extension not loaded.');
+            throw new PHPUi_Exception_ExtensionNotLoaded('JSON extension not loaded.');
             
-        return json_encode($this->_properties);         
+        return json_encode(array('selector' => $this->_selector, 'properties' => $this->_properties));         
     }
 	
 }

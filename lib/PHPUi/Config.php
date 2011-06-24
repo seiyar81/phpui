@@ -10,10 +10,13 @@ final class PHPUi_Config
     
     /**
      * @var PHPUi_Cache_Storage cache object
-	 */
+    */
     private $_cache = null;
     
-    
+    /**
+     * Get the unique instance of PHPUi_Config
+     * @return PHPUi_Config 
+     */
     public static function getInstance()
     {
         if(null === self::$_instance) {
@@ -22,21 +25,41 @@ final class PHPUi_Config
         return self::$_instance;
     }
 
-
-    public function setCache(PHPUi_Cache_Storage $cache)
+    /**
+     * Set the cache object
+     * @param PHPUi_Cache_Storage $cache 
+     * @throws PHPUi_Exception_InvalidArgument
+     */
+    public function setCache($cache)
     {
-         if(!is_object($cache)) {
-            throw new PHPUi_Exception('Object expected but '.  gettype($cache) .' given');
+         if(!$cache instanceof PHPUi_Cache_Storage) {
+            throw new PHPUi_Exception_InvalidArgument('Object expected but '.  gettype($cache) .' given');
           } else {
             $this->_cache = $cache;   
          }
     }
     
+    /**
+     * Retrieve config cache object
+     * @return PHPUi_Cache_Storage 
+     */
     public function getCache()
     {
          return $this->_cache;
     }
     
+    /**
+     * Test if a cache object has been set
+     * @return bool 
+     */
+    public function hasCache()
+    {
+        return $this->_cache !== null;
+    }
+    
+    /**
+     * Private constructor
+     */
     private function __construct() 
     {
          // Nothing at the time   

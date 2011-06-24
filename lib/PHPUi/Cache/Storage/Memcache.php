@@ -102,4 +102,13 @@ class PHPUi_Cache_Storage_Memcache extends PHPUi_Cache_Storage_Abstract
     {
         return $this->_memcache->delete($id);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    protected function _doClear() 
+    {
+        return $this->_memcache->flush();
+    }
+    
 }

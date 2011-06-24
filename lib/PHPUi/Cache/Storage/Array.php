@@ -75,4 +75,14 @@ class PHPUi_Cache_Storage_Array extends PHPUi_Cache_Storage_Abstract
         
         return true;
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    protected function _doClear() 
+    {
+        $this->data = array();
+        
+        return true;
+    }
 }

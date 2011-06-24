@@ -109,7 +109,7 @@ class PHPUi_CSS_File
 		$string = '';
 		if(count($this->_items)) {
 			foreach($this->_items as $item) {
-				$string .= $item->toString(PHPUi_CSS::FILE);
+				$string .= $item->toString(PHPUi_CSS::FILE) ."\r\n";
 			}
 		}
 		return $string;
@@ -139,6 +139,10 @@ class PHPUi_CSS_File
 		} else {
 			if(false === file_put_contents($this->_name, $content))
 				return false;
+                        else {
+                            if(PHPUi_Config::getInstance()->hasCache())
+                                    PHPUi_Config::getInstance()->getCache()->save($this->getName(), $this->_items);
+                        }
 				
 			fclose($f);
 			return true;
@@ -153,7 +157,12 @@ class PHPUi_CSS_File
 	public function parseFile($filename) {
 		if(!file_exists($filename)) {
 			throw new PHPUi_Exception("File doesn't exist.");
-		} else {
+		} else if(PHPUi_Config::getInstance()->hasCache() &&
+                                PHPUi_Config::getInstance()->getCache()->contains($filename)) {
+                    $items = PHPUi_Config::getInstance()->getCache()->fetch($filename);
+                    foreach($items as $item)
+                        $this->addItem($item);
+                } else {
 		   $lines = file($filename);
 		   $cssstyles = '';
 		   foreach ($lines as $line_num => $line) {
