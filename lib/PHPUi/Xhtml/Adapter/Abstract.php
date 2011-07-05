@@ -41,8 +41,6 @@ abstract class PHPUi_Xhtml_Adapter_Abstract extends PHPUi_Xhtml_Element
      * @param array $config
      * @throws PHPUi_Exception_MissingArgument
      */
-    protected function _checkRequiredOptions(array $config)
-    {
-    }
+    abstract protected function _checkRequiredOptions(array $config);
     
 }

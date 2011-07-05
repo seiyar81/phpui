@@ -5,7 +5,7 @@
  */
 require_once 'PHPUi/Xhtml/Adapter/Abstract.php';
 
-class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract
+class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract implements SplObserver
 {
     
     /**
@@ -59,8 +59,8 @@ class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract
                         throw new PHPUi_Exception_InvalidArgument("Children element have to be PHPUi_Xhtml_Element instances");    
                     }
                     else {
-                        $this->setClasses( $child );
                         $element->addChild( $child );
+                        $element->attach( $this );
                     }
                 }
             }
@@ -104,6 +104,24 @@ class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract
     }
     
     /**
+     * Update current subject classes 
+     * 
+     * @param SplSubject $subject
+     */
+    public function update(SplSubject $subject)
+    {
+        if(!$subject instanceof PHPUi_Xhtml_Element) {
+            /**
+              * @see PHPUi_Exception_InvalidArgument
+              */
+              require_once 'PHPUi/Exception/InvalidArgument.php';
+              throw new PHPUi_Exception_InvalidArgument("Subject has to be PHPUi_Xhtml_Element instance");    
+        } else {
+            $this->setClasses(&$subject);   
+        }
+    }
+    
+    /**
      * Check for config options that are mandatory.
      * Throw exceptions if any are missing.
      *
@@ -128,22 +146,22 @@ class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract
      */
     private function setClasses(PHPUi_Xhtml_Element $element)
     {
-           /**
-             * Retrieve 960Gs attribs and directly add the classes to the alement
+            /**
+             * Retrieve 960Gs attribs and directly add the classes to the element
              */
             $attribs = &$element->getAttribs();
-            $classes = explode(' ', $attribs['class']);
+            if(is_array($attribs)) {
+                 $classes = array_key_exists('class', $attribs) ? explode(' ', $attribs['class']) : array();
             
-            foreach($this->_gsClasses as $class => $suffix) {
-                
-                if(array_key_exists($class, $attribs)) {
-                    $classes[] = $class . ($suffix ? '_'.intval($attribs[$class]) : '');
-                    $element->removeAttrib($class);
-                }
-                
+                 foreach($this->_gsClasses as $class => $suffix) {
+                    if(array_key_exists($class, $attribs)) {
+                         $classes[] = $class . ($suffix ? '_'.intval($attribs[$class]) : '');
+                         $element->removeAttrib($class);
+                     }
+                 }
+                 
+                 $element->setAttrib('class', trim(join(' ', $classes)));
             }
-            
-            $element->setAttrib('class', trim(join(' ', $classes)));
     }
     
 }

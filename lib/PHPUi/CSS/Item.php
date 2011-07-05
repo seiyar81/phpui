@@ -182,8 +182,13 @@ class PHPUi_CSS_Item
      */
     public function toJson()
     {
-        if(!extension_loaded('json'))
+        if(!extension_loaded('json')) {
+            /**
+             * @see PHPUi_Exception_ExtensionNotLoaded
+             */
+            require_once 'PHPUi/Exception/ExtensionNotLoaded.php';
             throw new PHPUi_Exception_ExtensionNotLoaded('JSON extension not loaded.');
+        }
             
         return json_encode(array('selector' => $this->_selector, 'properties' => $this->_properties));         
     }

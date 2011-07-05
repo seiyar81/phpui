@@ -1,7 +1,7 @@
 <?php
 
 
-class PHPUi_Xhtml_Element 
+class PHPUi_Xhtml_Element implements SplSubject
 {
     /**
      * PHPUi_Xhtml_Element children of this element
@@ -28,6 +28,12 @@ class PHPUi_Xhtml_Element
     private $_closeTag;
     
     /**
+     * SplObserver array
+     * @var array
+     */
+    private $_observers = array();
+    
+    /**
      * PHPUi_Xhtml_Element constructor
      * 
      * @param string $tagName
@@ -42,7 +48,7 @@ class PHPUi_Xhtml_Element
         $this->_children = null;
         
         if(null !== $text)
-            $this->addChild (new PHPUi_Xhtml_Element_Text($text));
+            $this->addChild(new PHPUi_Xhtml_Element_Text($text));
     }
     
     /**
@@ -59,10 +65,25 @@ class PHPUi_Xhtml_Element
                 $this->_children[$element->getAttrib('id')] = $element;
             else
                 $this->_children[] = $element;
+            
         } else if(is_string($element)) {
-            $this->_children[] = new PHPUi_Xhtml_Element($element);
+            $el = new PHPUi_Xhtml_Element($element);
+            $this->_children[] = $el;
         }
         
+        return $this;
+    }
+    
+    /**
+     * Add children elements
+     *
+     * @param  string|PHPUi_Xhtml_Element
+     * @return PHPUi_Xhtml_Element
+     */
+    public function addChildren($elements)
+    {
+        foreach($elements as $element)
+            $this->addChild($element);
         return $this;
     }
     
@@ -197,6 +218,38 @@ class PHPUi_Xhtml_Element
     public function getAttribs()
     {
         return $this->_attribs;
+    }
+    
+    /**
+     * SplSubject method
+     * Attach given observer
+     * 
+     * @param SplObserver
+     */
+    public function attach(SplObserver $observer)
+    {
+        $this->_observers[spl_object_hash($observer)] = $observer;   
+        
+        if(count($this->_children)) {
+            foreach($this->_children as $child)
+                $child->attach($observer); 
+        }
+        
+        // Notify all attached observers
+        $this->notify();
+    }
+    
+    public function detach(SplObserver $observer)
+    {
+        if(array_key_exists(spl_object_hash($observer), $this->_observers)) {
+            unset($this->_observers[spl_object_hash($observer)]);
+        }
+    }
+    
+    public function notify()
+    {
+        foreach($this->_observers as $observer)
+            $observer->update($this);
     }
     
     /**
