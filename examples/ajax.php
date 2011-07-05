@@ -21,7 +21,7 @@ function getRandomColorHex($max_r, $max_g, $max_b)
     
     $item = new PHPUi_CSS_Item("#myinput2", array('background-color' => getRandomColorHex(rand(0,255), rand(0,255), rand(0,255)), 
             'width' => rand(120, 200).'px'));
-    $item2 = new PHPUi_CSS_Item("div", array('background-color' => getRandomColorHex(rand(0,255), rand(0,255), rand(0,255))));
+    $item2 = new PHPUi_CSS_Item("apeControllerDemo", array('background-color' => getRandomColorHex(rand(0,255), rand(0,255), rand(0,255))));
     $item3 = new PHPUi_CSS_Item("#test", array('background-color' => getRandomColorHex(rand(0,255), rand(0,255), rand(0,255))));
     
     echo json_encode(array($item->toArray(), $item2->toArray(), $item3->toArray()));

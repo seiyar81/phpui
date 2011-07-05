@@ -1,2 +1,5 @@
 body { background-color : green; font-family : Arial; font-size : 16px;  }
-#test { background-color : red;  }
+
+.clear {clear: both;}
+
+#phpui, #phpui2, #phpui3 { background-color : red; padding: 5px; }
