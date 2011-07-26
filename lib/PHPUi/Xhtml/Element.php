@@ -65,10 +65,14 @@ class PHPUi_Xhtml_Element implements SplSubject
                 $this->_children[$element->getAttrib('id')] = $element;
             else
                 $this->_children[] = $element;
+                
+            $this->attachChild($element);
             
         } else if(is_string($element)) {
             $el = new PHPUi_Xhtml_Element($element);
             $this->_children[] = $el;
+            
+            $this->attachChild($el);
         }
         
         return $this;
@@ -77,11 +81,19 @@ class PHPUi_Xhtml_Element implements SplSubject
     /**
      * Add children elements
      *
-     * @param  string|PHPUi_Xhtml_Element
+     * @param  array
      * @return PHPUi_Xhtml_Element
      */
     public function addChildren($elements)
     {
+        if(!is_array($elements)) {
+            /**
+              * @see PHPUi_Exception_InvalidArgument
+              */
+            require_once 'PHPUi/Exception/InvalidArgument.php';
+            throw new PHPUi_Exception_InvalidArgument('Array expected but ' . gettype($properties) . ' given');
+        }
+        
         foreach($elements as $element)
             $this->addChild($element);
         return $this;
@@ -233,6 +245,22 @@ class PHPUi_Xhtml_Element implements SplSubject
         if(count($this->_children)) {
             foreach($this->_children as $child)
                 $child->attach($observer); 
+        }
+        
+        // Notify all attached observers
+        $this->notify();
+    }
+    
+    /**
+     * Attach all observers to the given element
+     * 
+     * @param PHPUi_Xhtml_Element
+     */
+    public function attachChild(PHPUi_Xhtml_Element $element)
+    {
+        if(count($this->_observers)) {
+            foreach($this->_observers as $obs)
+                $element->attach($obs); 
         }
         
         // Notify all attached observers

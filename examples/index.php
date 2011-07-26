@@ -22,6 +22,7 @@
 	require_once 'PHPUi/Cache/Storage/Xcache.php';
         
     require_once 'PHPUi/Xhtml/Adapter/960Gs.php';
+    require_once 'PHPUi/Xhtml/Adapter/Blueprint.php';
     
     require_once 'PHPUi/Xhtml/Loader/Yaml.php';
     require_once 'PHPUi/Xhtml/Loader/Json.php';
@@ -61,21 +62,26 @@
 <head>
     <link rel="stylesheet" type="text/css" media="all" href="<?php echo $file->getName() ?>" />
     <link rel="stylesheet" type="text/css" media="all" href="css/960.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="css/blueprint.css" />
     <link rel="stylesheet" type="text/css" media="all" href="css/demo.css" />
-    <!--<script type="text/javascript" src="js/jquery.min.js"></script>-->
+    <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javaScript" src="../APE_JSF/Clients/mootools-core.js"></script>
     <script type="text/javaScript" src="../APE_JSF/Clients/MooTools.js"></script>
 	<script type="text/javaScript" src="../APE_JSF/Demos/config.js"></script>
 	<script type="text/javaScript" src="js/demo.js"></script>
 	<script type="text/javaScript">
-		window.addEvent('domready', function(){
-			var client = new APE.Controller();
+       /* var client = null;
+		window.addEvent('domready', function() {
+			client = new APE.Controller();
 
 			client.load({
 				identifier: 'action',
 				channel: 'phpui'
 			});
-		});
+            
+            client.addEvent('onRaw', function(e) { console.log("Raw received") });
+            client.addEvent('onCmd', function(e) { console.log("Command sent") });
+		});*/
 	</script>
 </head>
 <body>
@@ -102,9 +108,28 @@
     <br />
     <br />
     
-    <?php
-        echo $gs1;
+    <?php    
+        $blue = new PHPUi_Xhtml_Adapter_Blueprint(array('showgrid'));
+        $blue->addChild( new PHPUi_Xhtml_Element('h2', array('span' => 24), null, '24 Column Grid') );
         
+        $child1 = new PHPUi_Xhtml_Element('div', array('span' => 12) );
+        $child2 = new PHPUi_Xhtml_Element('div', array('span' => 12, 'last' => true) );
+        
+        $blue->addChildren(array($child1, $child2));
+        
+        $error = new PHPUi_Xhtml_Element('div', array('error' => true), null, 'This is a div with the class <strong>.error</strong>' );
+        $notice = new PHPUi_Xhtml_Element('div', array('notice' => true), null, 'This is a div with the class <strong>.notice</strong>' );
+        $info = new PHPUi_Xhtml_Element('div', array('info' => true), null, 'This is a div with the class <strong>.info</strong>' );
+        $success = new PHPUi_Xhtml_Element('div', array('success' => true), null, 'This is a div with the class <strong>.success</strong>' );
+        
+        $child1->addChildren(array($error, $notice));
+        $child2->addChildren(array($info, $success));
+        
+        echo $blue;
+        
+        
+        
+        echo $gs1;
         echo $gs2;
     ?>
     
@@ -124,6 +149,16 @@
     
     <script type="text/javascript">
         function loadColor() {
+            
+            var scripts = new Array();
+            $("script").each(function(){
+                if($(this).attr('src')) {
+                    scripts.push($(this).attr('src'));
+                } 
+            });
+            
+            //client.sendRaw('scripts');
+            
            /* $.ajax({ type: 'GET', url: 'ajax.php', dataType: 'json',
                 success:function(data) {
                   

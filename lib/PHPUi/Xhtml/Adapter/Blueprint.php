@@ -5,7 +5,7 @@
  */
 require_once 'PHPUi/Xhtml/Adapter/Abstract.php';
 
-class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract implements SplObserver
+class PHPUi_Xhtml_Adapter_Blueprint extends PHPUi_Xhtml_Adapter_Abstract implements SplObserver
 {
     
     /**
@@ -20,9 +20,9 @@ class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract implements 
      * 
      * @var array
      */
-    private $_gsClasses = array('grid' => true, 'pull' => true, 'push' => true, 'prefix' => true, 'suffix' => true, 
-                                    'omega' => false, 'alpha' => false);
-
+    private $_blueClasses = array('container' => false, 'showgrid' => false, 'span' => true, 'pull' => true, 'push' => true, 'append' => true, 
+                                    'prepend' => true, 'last' => false, 'error' => false, 'notice' => false, 'info' => false, 'success' => false );
+    
     /**
      * Constructor.
      *
@@ -33,7 +33,12 @@ class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract implements 
     {
         parent::__construct($config);
         
-        $this->_rootElement = new PHPUi_Xhtml_Element('div', array('class' => 'container_'.$this->_config['columns']));
+        if(in_array('showgrid', $config))
+          $classes = 'container showgrid';
+        else
+          $classes = 'container';
+        
+        $this->_rootElement = new PHPUi_Xhtml_Element('div', array('class' => $classes));
     }
     
     /**
@@ -119,9 +124,7 @@ class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract implements 
      * Print the current Grid object
      */
     public function __toString()
-    {
-        $this->_checkRequiredOptions($this->_config);
-        
+    {    
         return $this->_rootElement->__toString();
     }
     
@@ -152,13 +155,6 @@ class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract implements 
      */
     protected function _checkRequiredOptions(array $config)
     {
-        if(!array_key_exists('columns', $config)) {
-            /**
-             * @see PHPUi_Exception_MissingArgument
-             */
-            require_once 'PHPUi/Exception/MissingArgument.php';
-            throw new PHPUi_Exception_MissingArgument("Configuration array must have the key 'columns' to define the number of columns");    
-        }
     }
     
     /**
@@ -169,15 +165,15 @@ class PHPUi_Xhtml_Adapter_960Gs extends PHPUi_Xhtml_Adapter_Abstract implements 
     private function setClasses(PHPUi_Xhtml_Element $element)
     {
             /**
-             * Retrieve 960Gs attribs and directly add the classes to the element
+             * Retrieve Blueprint attribs and directly add the classes to the element
              */
             $attribs = &$element->getAttribs();
             if(is_array($attribs)) {
                  $classes = array_key_exists('class', $attribs) ? explode(' ', $attribs['class']) : array();
             
-                 foreach($this->_gsClasses as $class => $suffix) {
+                 foreach($this->_blueClasses as $class => $suffix) {
                     if(array_key_exists($class, $attribs)) {
-                         $classes[] = $class . ($suffix ? '_'.intval($attribs[$class]) : '');
+                         $classes[] = $class . ($suffix ? '-'.intval($attribs[$class]) : '');
                          $element->removeAttrib($class);
                      }
                  }
