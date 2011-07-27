@@ -21,7 +21,8 @@ class PHPUi_Xhtml_Adapter_Blueprint extends PHPUi_Xhtml_Adapter_Abstract impleme
      * @var array
      */
     private $_blueClasses = array('container' => false, 'showgrid' => false, 'span' => true, 'pull' => true, 'push' => true, 'append' => true, 
-                                    'prepend' => true, 'last' => false, 'error' => false, 'notice' => false, 'info' => false, 'success' => false );
+                                    'prepend' => true, 'last' => false, 'error' => false, 'notice' => false, 'info' => false, 'success' => false,
+                                    'inline' => false, 'text' => false, 'button' => false);
     
     /**
      * Constructor.

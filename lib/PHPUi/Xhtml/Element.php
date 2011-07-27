@@ -55,9 +55,10 @@ class PHPUi_Xhtml_Element implements SplSubject
      * Add child element
      *
      * @param  string|PHPUi_Xhtml_Element
+     * @param  string
      * @return PHPUi_Xhtml_Element
      */
-    public function addChild($element)
+    public function addChild($element, $text = '')
     {
         if($element instanceof PHPUi_Xhtml_Element) {
             // If no id attrib is set then the element is just added to the array
@@ -68,14 +69,15 @@ class PHPUi_Xhtml_Element implements SplSubject
                 
             $this->attachChild($element);
             
+            return $element;
         } else if(is_string($element)) {
-            $el = new PHPUi_Xhtml_Element($element);
+            $el = new PHPUi_Xhtml_Element($element, null, true, $text);
             $this->_children[] = $el;
             
             $this->attachChild($el);
+            
+            return $el;
         }
-        
-        return $this;
     }
     
     /**
@@ -322,7 +324,8 @@ class PHPUi_Xhtml_Element implements SplSubject
                 foreach($this->_children as $child)
                         $xhtml .= $child;
             }
-            $xhtml .= $this->getClosingTag();
+            if($this->_closeTag)
+                $xhtml .= $this->getClosingTag();
         }
         return $xhtml;
     }
