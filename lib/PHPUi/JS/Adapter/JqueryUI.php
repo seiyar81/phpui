@@ -1,5 +1,7 @@
 <?php
 
+require_once 'PHPUi/JS.php';
+
 class PHPUi_JS_Adapter_JqueryUI implements SplObserver
 {
  
@@ -68,8 +70,10 @@ class PHPUi_JS_Adapter_JqueryUI implements SplObserver
      */
     private function button(PHPUi_Xhtml_Element $element)
     {
-          $content = "$('#".$element->getAttrib('id')."').button();\r\n";
-          
+          $content = "$('#".$element->getAttrib('id')."').button()";
+            $content .= $this->formatEvents($element->getAttrib("jui-button"));
+          $content .= ";\r\n";
+          $element->removeAttrib("jui-button");
           return $content;
     }
     
@@ -78,8 +82,8 @@ class PHPUi_JS_Adapter_JqueryUI implements SplObserver
      */
     private function dialog(PHPUi_Xhtml_Element $element)
     {
-          $content = "$('#".$element->getAttrib('id')."').dialog(".json_encode($element->getAttrib("dialog")).");\r\n";
-          $element->removeAttrib('dialog');
+          $content = "$('#".$element->getAttrib('id')."').dialog(".PHPUi_JS::encode($element->getAttrib("jui-dialog")).");\r\n";
+          $element->removeAttrib('jui-dialog');
           return $content;
     }
     
@@ -93,10 +97,10 @@ class PHPUi_JS_Adapter_JqueryUI implements SplObserver
     {
         if(!$subject instanceof PHPUi_Xhtml_Element) {
             /**
-              * @see PHPUi_Exception_InvalidArgument
-              */
-              require_once 'PHPUi/Exception/InvalidArgument.php';
-              throw new PHPUi_Exception_InvalidArgument("Subject has to be PHPUi_Xhtml_Element instance");    
+             * @see PHPUi_Exception_InvalidArgument
+             */
+             require_once 'PHPUi/Exception/InvalidArgument.php';
+             throw new PHPUi_Exception_InvalidArgument("Subject has to be PHPUi_Xhtml_Element instance");    
         } else {
               $this->_checkProperties($element);
         }
@@ -123,6 +127,23 @@ class PHPUi_JS_Adapter_JqueryUI implements SplObserver
                  }
             }
             return false;
+    }
+    
+    private function formatEvents($array)
+    {
+        if(!is_array($array)) {
+            /**
+             * @see PHPUi_Exception_InvalidArgument
+             */
+             require_once 'PHPUi/Exception/InvalidArgument.php';
+             throw new PHPUi_Exception_InvalidArgument("Subject has to be PHPUi_Xhtml_Element instance");  
+        } else {
+            $content = "";
+            foreach($array as $event => $func) {
+                $content .= ".".$event."(".$func.")";
+            }
+            return $content;
+        }
     }
     
 }

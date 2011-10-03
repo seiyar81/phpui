@@ -6,21 +6,21 @@
 	    get_include_path(),
 	)));
 
-	require_once 'PHPUi/Config.php';
-	require_once 'PHPUi/PHPUi.php';
-	require_once 'PHPUi/Debug.php';
+    require_once 'PHPUi/Config.php';
+    require_once 'PHPUi/PHPUi.php';
+    require_once 'PHPUi/Debug.php';
     
     require_once 'PHPUi/CSS.php';
-	require_once 'PHPUi/CSS/Item.php';
-	require_once 'PHPUi/CSS/File.php';
+    require_once 'PHPUi/CSS/Item.php';
+    require_once 'PHPUi/CSS/File.php';
         
     require_once 'PHPUi/Xhtml/Element.php';
     require_once 'PHPUi/Xhtml/Element/Text.php';
     require_once 'PHPUi/Xhtml/Element/Br.php';
     require_once 'PHPUi/Xhtml/Element/Hr.php';
 	
-	require_once 'PHPUi/Cache/Storage/Array.php';
-	require_once 'PHPUi/Cache/Storage/Xcache.php';
+    require_once 'PHPUi/Cache/Storage/Array.php';
+    require_once 'PHPUi/Cache/Storage/Xcache.php';
         
     require_once 'PHPUi/Xhtml/Adapter/960Gs.php';
     require_once 'PHPUi/Xhtml/Adapter/Blueprint.php';
@@ -37,14 +37,14 @@
     $loader3 = new PHPUi_Xhtml_Loader_Yaml(array('filename' => 'blue.yml'));
     $blue1 = $loader3->load();
     
-    PHPUi_Config::getInstance()->setCache(new PHPUi_Cache_Storage_Xcache());
-    PHPUi_Config::getInstance()->getCache()->clear();
+    //PHPUi_Config::getInstance()->setCache(new PHPUi_Cache_Storage_Xcache());
+    //PHPUi_Config::getInstance()->getCache()->clear();
         
-	$file = new PHPUi_CSS_File('css/test.css');
+    $file = new PHPUi_CSS_File('css/test.css');
 	
-	/*$item = clone $file->getItem("#test");
-	$item->addProperties(array('background-color' => 'red', 'font-weight' => 'bold'));
-	$file->addItem($item);*/
+    /*$item = clone $file->getItem("#test");
+    $item->addProperties(array('background-color' => 'red', 'font-weight' => 'bold'));
+    $file->addItem($item);*/
         
     $gs = new PHPUi_Xhtml_Adapter_960Gs(array('columns' => '16'));
     $gs->addChild( new PHPUi_Xhtml_Element('h2', array('grid' => 16), null, '16 Column Grid') );
@@ -72,24 +72,6 @@
     <link rel="stylesheet" type="text/css" media="all" href="css/jquery-ui.css">
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui.js"></script>
-    <!--<script type="text/javaScript" src="../APE_JSF/Clients/mootools-core.js"></script>
-    <script type="text/javaScript" src="../APE_JSF/Clients/MooTools.js"></script>
-	<script type="text/javaScript" src="../APE_JSF/Demos/config.js"></script>
-	<script type="text/javaScript" src="js/demo.js"></script>
-	<script type="text/javaScript">
-       /* var client = null;
-		window.addEvent('domready', function() {
-			client = new APE.Controller();
-
-			client.load({
-				identifier: 'action',
-				channel: 'phpui'
-			});
-            
-            client.addEvent('onRaw', function(e) { console.log("Raw received") });
-            client.addEvent('onCmd', function(e) { console.log("Command sent") });
-		});*/
-	</script>-->
 </head>
 <body>
 
@@ -156,7 +138,8 @@
         $form4->addChild(new PHPUi_Xhtml_Element('input', array('type' => 'text', 'value' => 'Field with class .text', 'text' => true), false ));
         
         $form5 = new PHPUi_Xhtml_Element('div', array('span' => 2, 'last' => true) );
-        $submit = new PHPUi_Xhtml_Element('input', array('id' => 'submit', 'type' => 'submit', 'value' => 'submit', 'jui' => 'button'), false );
+        $submit = new PHPUi_Xhtml_Element('input', array('id' => 'submit', 'type' => 'submit', 'value' => 'submit', 'jui' => 'button', 
+                                                            'jui-button' => array('click' => 'function() { alert("Button clicked !"); return false; }')), false );
         $form5->addChild($submit);
         
         $fieldset->addChildren(array($form1, new PHPUi_Xhtml_Element('div', array('span' => 2), true, 'some text' ), $form2, $form3, 
@@ -180,8 +163,10 @@
         //echo $gs2;
         
         $dialog = new PHPUi_Xhtml_Element('div', array('id' => 'jquery-dialog', 'jui' => 'dialog', 
-                                                       'dialog' => array('autoOpen' => true, 'title' => 'jQuery UI Dialog', 'modal' => true,
-                                                       'close' => 'function(){ alert("PLOP") }')), 
+                                                       'jui-dialog' => array('autoOpen' => true, 'title' => 'jQuery UI Dialog', 'modal' => true,
+                                                            'close' => 'function(){ alert("Dialog closed.") }',
+                                                            'buttons' => array('Close' => 'function(){ alert("Dialog closed via button."); $(this).dialog("close") }') )
+                                                        ), 
                                                        true, 'Super test dialog !'); 
         
         require_once 'PHPUi/JS/Adapter/JqueryUI.php';

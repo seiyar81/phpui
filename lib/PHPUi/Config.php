@@ -2,7 +2,6 @@
 
 final class PHPUi_Config
 {
-    
     /**
      * @var PHPUi_Config Config instance
      */
