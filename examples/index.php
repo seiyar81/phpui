@@ -139,7 +139,7 @@
         
         $form5 = new PHPUi_Xhtml_Element('div', array('span' => 2, 'last' => true) );
         $submit = new PHPUi_Xhtml_Element('input', array('id' => 'submit', 'type' => 'submit', 'value' => 'submit', 'jui' => 'button', 
-                                                            'jui-button' => array('click' => 'function() { alert("Button clicked !"); return false; }')), false );
+                                                            'jui-button' => array('click' => 'function() { alert("Button clicked !"); $("#jquery-dialog").dialog("open"); return false; }')), false );
         $form5->addChild($submit);
         
         $fieldset->addChildren(array($form1, new PHPUi_Xhtml_Element('div', array('span' => 2), true, 'some text' ), $form2, $form3, 
