@@ -192,7 +192,7 @@ class PHPUi_Xhtml_Element implements SplSubject
         if ($this->hasAttrib($name)) {
             return $this->_attribs[$name];
         }
-        return '';
+        return null;
     }
     
     /**

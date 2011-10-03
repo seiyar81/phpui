@@ -71,8 +71,10 @@ abstract class PHPUi_Xhtml_Loader_Abstract
     public function load()
     {
         if(!empty($this->_content)) {
-               if(array_key_exists('gs', $this->_content)) {
-                    return $this->_loadGs();   
+               if(array_key_exists('960gs', $this->_content)) {
+                    return $this->_load960Gs();   
+               } else if(array_key_exists('blueprint', $this->_content)) {
+                    return $this->_loadBlueprint();   
                }
         }
         return false;
@@ -92,9 +94,9 @@ abstract class PHPUi_Xhtml_Loader_Abstract
      *
      * @return bool|PHPUi_Xhtml_Adapter_960Gs
      */
-    protected function _loadGs()
+    protected function _load960Gs()
     {
-           $gsConfig = $this->_content['gs'];
+           $gsConfig = $this->_content['960gs'];
            if(array_key_exists('columns', $gsConfig)) {
                $gs = new PHPUi_Xhtml_Adapter_960Gs(array('columns' => $gsConfig['columns']));
                if(array_key_exists('elements', $gsConfig)) {
@@ -116,6 +118,34 @@ abstract class PHPUi_Xhtml_Loader_Abstract
                return $gs;
            }
            return false;
+    }
+    
+    /**
+     * Load a Blueprint Adapter based on loaded config
+     *
+     * @return bool|PHPUi_Xhtml_Adapter_Blueprint
+     */
+    protected function _loadBlueprint()
+    {
+           $blueConfig = $this->_content['blueprint'];
+           $blue = new PHPUi_Xhtml_Adapter_Blueprint(array_key_exists('showgrid', $blueConfig) ? array('showgrid') : array());
+               if(array_key_exists('elements', $blueConfig)) {
+                   foreach($blueConfig['elements'] as $element) {
+                       $elConfig = array_key_exists($element, $this->_content) ? $this->_content[$element] : array();
+                       $tagName = array_key_exists('tag', $elConfig) ? $elConfig['tag'] : 'div';
+                       $closeTag = array_key_exists('closeTag', $elConfig) ? $elConfig['closeTag'] : true;
+                       $text = array_key_exists('text', $elConfig) ? $elConfig['text'] : null;
+                   
+                       $el = new PHPUi_Xhtml_Element($tagName, $this->_cleanElementConfig($elConfig),
+                                                $closeTag, $text);
+                       if(array_key_exists('elements', $elConfig)) {
+                          $items = $this->_loadElements($elConfig['elements'], $blue);
+                          $blue->addChild($el, $items);
+                       } else
+                          $blue->addChild($el);
+                   }
+               }
+            return $blue;
     }
     
     protected function _loadElements($elements, $root)

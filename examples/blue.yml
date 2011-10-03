@@ -1,0 +1,40 @@
+blueprint: 
+    showgrid: true
+    elements: [title, leftcol, rightcol]
+
+title:
+    tag: h2
+    span: 24
+    last: true
+    text: 24 Column Grid from Yaml file
+
+leftcol:
+    tag: div
+    span: 12
+    elements: [error, notice]
+
+rightcol:
+    tag: div
+    span: 12
+    last: true
+    elements: [info, success]
+
+error:
+    tag: div
+    error: true
+    text: This is a div with the class <strong>.error</strong>
+    
+notice:
+    tag: div
+    notice: true
+    text: This is a div with the class <strong>.notice</strong>
+
+info:
+    tag: div
+    info: true
+    text: This is a div with the class <strong>.info</strong>
+
+success:
+    tag: div
+    success: true
+    text: This is a div with the class <strong>.success</strong>

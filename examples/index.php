@@ -28,11 +28,14 @@
     require_once 'PHPUi/Xhtml/Loader/Yaml.php';
     require_once 'PHPUi/Xhtml/Loader/Json.php';
     
-    $loader1 = new PHPUi_Xhtml_Loader_Json(array('filename' => 'test.json'));
+    $loader1 = new PHPUi_Xhtml_Loader_Json(array('filename' => '960.json'));
     $gs1 = $loader1->load();
 	
-    $loader2 = new PHPUi_Xhtml_Loader_Yaml(array('filename' => 'test.yml'));
+    $loader2 = new PHPUi_Xhtml_Loader_Yaml(array('filename' => '960.yml'));
     $gs2 = $loader2->load();
+    
+    $loader3 = new PHPUi_Xhtml_Loader_Yaml(array('filename' => 'blue.yml'));
+    $blue1 = $loader3->load();
     
     PHPUi_Config::getInstance()->setCache(new PHPUi_Cache_Storage_Xcache());
     PHPUi_Config::getInstance()->getCache()->clear();
@@ -66,8 +69,10 @@
     <!--<link rel="stylesheet" type="text/css" media="all" href="css/960.css" />-->
     <link rel="stylesheet" type="text/css" media="all" href="css/blueprint.css">
     <!--<link rel="stylesheet" type="text/css" media="all" href="css/demo.css" />-->
-    <!--<script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javaScript" src="../APE_JSF/Clients/mootools-core.js"></script>
+    <link rel="stylesheet" type="text/css" media="all" href="css/jquery-ui.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <!--<script type="text/javaScript" src="../APE_JSF/Clients/mootools-core.js"></script>
     <script type="text/javaScript" src="../APE_JSF/Clients/MooTools.js"></script>
 	<script type="text/javaScript" src="../APE_JSF/Demos/config.js"></script>
 	<script type="text/javaScript" src="js/demo.js"></script>
@@ -151,7 +156,8 @@
         $form4->addChild(new PHPUi_Xhtml_Element('input', array('type' => 'text', 'value' => 'Field with class .text', 'text' => true), false ));
         
         $form5 = new PHPUi_Xhtml_Element('div', array('span' => 2, 'last' => true) );
-        $form5->addChild(new PHPUi_Xhtml_Element('input', array('type' => 'submit', 'value' => 'submit', 'button' => true), false ));
+        $submit = new PHPUi_Xhtml_Element('input', array('id' => 'submit', 'type' => 'submit', 'value' => 'submit', 'jui' => 'button'), false );
+        $form5->addChild($submit);
         
         $fieldset->addChildren(array($form1, new PHPUi_Xhtml_Element('div', array('span' => 2), true, 'some text' ), $form2, $form3, 
                                      new PHPUi_Xhtml_Element('div', array('span' => 2), true, '<a href="">A Hyperlink</a>' ), $form4, $form5));
@@ -168,35 +174,21 @@
         
         echo $blue;
         
+        
+        echo $blue1;
         //echo $gs1;
         //echo $gs2;
-    ?>
-    
-    <script type="text/javascript">
-        function loadColor() {
-            
-            var scripts = new Array();
-            $("script").each(function(){
-                if($(this).attr('src')) {
-                    scripts.push($(this).attr('src'));
-                } 
-            });
-            
-            //client.sendRaw('scripts');
-            
-           /* $.ajax({ type: 'GET', url: 'ajax.php', dataType: 'json',
-                success:function(data) {
-                  
-                  for(var i = 0; i < data.length; i++)
-                      $(data[i].selector).css(data[i].properties); 
-                   
-                  //setTimeout("loadColor()", 1000);
-                }
-            });*/
-        }
         
-        setTimeout("loadColor()", 1000);
-    </script>
+        $dialog = new PHPUi_Xhtml_Element('div', array('id' => 'jquery-dialog', 'jui' => 'dialog', 
+                                                       'dialog' => array('autoOpen' => true, 'title' => 'jQuery UI Dialog', 'modal' => true,
+                                                       'close' => 'function(){ alert("PLOP") }')), 
+                                                       true, 'Super test dialog !'); 
+        
+        require_once 'PHPUi/JS/Adapter/JqueryUI.php';
+        PHPUi_JS_Adapter_JqueryUI::getInstance()->addElement($submit)->addElement($dialog)->flush();
+        
+        echo $dialog;
+    ?>
     
 </body>
 </html>

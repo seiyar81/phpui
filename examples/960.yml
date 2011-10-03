@@ -1,4 +1,4 @@
-gs: 
+960gs: 
     columns: 16
     elements: [phpui, clear, phpui2, clear, phpui3]
 
