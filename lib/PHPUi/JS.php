@@ -9,6 +9,7 @@ final class PHPUi_JS
     
     /**
      * Encode a given array to JSON format, ensure that functions won't be encoded
+     * 
      * @param array $array
      * @return string 
      */
@@ -30,6 +31,7 @@ final class PHPUi_JS
     
     /**
      * Performs the encoding
+     * 
      * @param array $array 
      */
     protected static function encodeArray(&$array)

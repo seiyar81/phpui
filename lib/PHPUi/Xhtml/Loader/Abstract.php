@@ -1,5 +1,7 @@
 <?php
 
+require_once 'PHPUi/JS/Adapter/Jquery.php';
+
 abstract class PHPUi_Xhtml_Loader_Abstract
 {
     
@@ -138,6 +140,10 @@ abstract class PHPUi_Xhtml_Loader_Abstract
                    
                        $el = new PHPUi_Xhtml_Element($tagName, $this->_cleanElementConfig($elConfig),
                                                 $closeTag, $text);
+                       
+                       if(array_key_exists('jquery', $elConfig))
+                            PHPUi_JS_Adapter_Jquery::getInstance ()->addElement($el);
+                       
                        if(array_key_exists('elements', $elConfig)) {
                           $items = $this->_loadElements($elConfig['elements'], $blue);
                           $blue->addChild($el, $items);
@@ -156,7 +162,9 @@ abstract class PHPUi_Xhtml_Loader_Abstract
                $tagName = array_key_exists('tag', $elConfig) ? $elConfig['tag'] : 'div';
                $closeTag = array_key_exists('closeTag', $elConfig) ? $elConfig['closeTag'] : true;
                $text = array_key_exists('text', $elConfig) ? $elConfig['text'] : null;
-               //$elConfig['id'] = array_key_exists('id', $elConfig) ? $elConfig['id'] : $element;
+               
+               if(array_key_exists('jquery', $elConfig))
+                   PHPUi_JS_Adapter_Jquery::getInstance ()->addElement($element);
                
                $el = new PHPUi_Xhtml_Element($tagName, $this->_cleanElementConfig($elConfig),
                                                 $closeTag, $text);

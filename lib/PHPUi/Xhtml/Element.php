@@ -235,6 +235,16 @@ class PHPUi_Xhtml_Element implements SplSubject
     }
     
     /**
+     * Return the element's tagname
+     * 
+     * @return string 
+     */
+    public function getTagName()
+    {
+        return $this->_tagName;
+    }
+    
+    /**
      * SplSubject method
      * Attach given observer
      * 

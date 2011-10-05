@@ -143,7 +143,7 @@ class PHPUi_Xhtml_Adapter_Blueprint extends PHPUi_Xhtml_Adapter_Abstract impleme
               require_once 'PHPUi/Exception/InvalidArgument.php';
               throw new PHPUi_Exception_InvalidArgument("Subject has to be PHPUi_Xhtml_Element instance");    
         } else {
-            $this->setClasses(&$subject);   
+            $this->setClasses($subject);   
         }
     }
     

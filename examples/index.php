@@ -139,7 +139,7 @@
         
         $form5 = new PHPUi_Xhtml_Element('div', array('span' => 2, 'last' => true) );
         $submit = new PHPUi_Xhtml_Element('input', array('id' => 'submit', 'type' => 'submit', 'value' => 'submit', 'jui' => 'button', 
-                                                            'jui-button' => array('click' => 'function() { alert("Button clicked !"); $("#jquery-dialog").dialog("open"); return false; }')), false );
+                                                            'jquery' => array('click' => 'function() { alert("Button clicked !"); $("#jquery-dialog").dialog("open"); return false; }')), false );
         $form5->addChild($submit);
         
         $fieldset->addChildren(array($form1, new PHPUi_Xhtml_Element('div', array('span' => 2), true, 'some text' ), $form2, $form3, 
@@ -148,7 +148,7 @@
         
         $formDiv->addChild(new PHPUi_Xhtml_Element_Hr());
         
-        $valid = new PHPUi_Xhtml_Element('p');
+        $valid = new PHPUi_Xhtml_Element('p', array('jquery' => array('bind' => array('mouseover' => 'function() { alert("<p> Over"); }')) ));
         $valid->addChild(new PHPUi_Xhtml_Element('a', array('href' => 'http://validator.w3.org/check?uri=referer', 'title' => 'Valider')))
               ->addChild(new PHPUi_Xhtml_Element('img', array('src' => 'http://www.blueprintcss.org/tests/parts/valid.png', 'alt' => 'Valider'
                                                     , 'title' => 'Valider'), false));
@@ -157,20 +157,26 @@
         
         echo $blue;
         
-        
-        echo $blue1;
+       
         //echo $gs1;
         //echo $gs2;
         
         $dialog = new PHPUi_Xhtml_Element('div', array('id' => 'jquery-dialog', 'jui' => 'dialog', 
-                                                       'jui-dialog' => array('autoOpen' => true, 'title' => 'jQuery UI Dialog', 'modal' => true,
+                                                        'jui-dialog' => array('autoOpen' => false, 'title' => 'jQuery UI Dialog', 'modal' => true,
                                                             'close' => 'function(){ alert("Dialog closed.") }',
-                                                            'buttons' => array('Close' => 'function(){ alert("Dialog closed via button."); $(this).dialog("close") }') )
-                                                        ), 
+                                                            'buttons' => array('Close' => 'function(){ alert("Dialog closed via button."); $(this).dialog("close") }') ),
+                                                        'jquery' => array('bind' => array('dialogclose' => 'function() { alert("Closed by bind"); }'))
+                                                       ),
                                                        true, 'Super test dialog !'); 
         
-        require_once 'PHPUi/JS/Adapter/JqueryUI.php';
-        PHPUi_JS_Adapter_JqueryUI::getInstance()->addElement($submit)->addElement($dialog)->flush();
+        require_once 'PHPUi/JS/Adapter/Jquery.php';
+        PHPUi_JS_Adapter_Jquery::getInstance()
+                ->addElements(array($dialog, $valid))
+                ->flush();
+        
+        echo '<script type="text/javascript">'.PHPUi_JS_Adapter_Jquery::getInstance()->button($submit).'</script>';
+        
+        echo $blue1;
         
         echo $dialog;
     ?>
