@@ -213,6 +213,7 @@ class PHPUi_JS_Adapter_Jquery implements SplObserver
                         }
                     }
                 } else {
+                    $content .= ".".$event."(";
                     $content .= $func.")";
                 }
             }
