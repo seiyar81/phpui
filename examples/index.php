@@ -148,7 +148,7 @@
         
         $formDiv->addChild(new PHPUi_Xhtml_Element_Hr());
         
-        $valid = new PHPUi_Xhtml_Element('p', array('jquery' => array('bind' => array('mouseover' => 'function() { alert("<p> Over"); }')) ));
+        $valid = new PHPUi_Xhtml_Element('p', array('jquery' => array('bind' => array('mouseover' => 'function() { $(this).css("background-color", "red"); }', 'mouseout' =>  'function() { $(this).css("background-color", "transparent") }')) ));
         $valid->addChild(new PHPUi_Xhtml_Element('a', array('href' => 'http://validator.w3.org/check?uri=referer', 'title' => 'Valider')))
               ->addChild(new PHPUi_Xhtml_Element('img', array('src' => 'http://www.blueprintcss.org/tests/parts/valid.png', 'alt' => 'Valider'
                                                     , 'title' => 'Valider'), false));

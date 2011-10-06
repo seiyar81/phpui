@@ -8,8 +8,9 @@ title:
     last: true
     text: 24 Column Grid from Yaml file
     jquery: 
-        bind: 
-            mouseover: 'function() { alert($(this).attr("class")); }'
+        bind:
+          mouseover: 'function() { $(this).css("background-color", "red"); }'
+          mouseout: 'function() { $(this).css("background-color", "transparent"); }'
 
 leftcol:
     tag: div

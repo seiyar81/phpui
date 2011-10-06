@@ -204,11 +204,14 @@ class PHPUi_JS_Adapter_Jquery implements SplObserver
         } else {
             $content = "";
             foreach($array as $event => $func) {
-                $content .= ".".$event."(";
+                
                 if(is_array($func)) {
-                    list($funcName, $funcBody) = each($func);
-                    if(strlen($funcName) && strlen($funcBody))
-                        $content .= "'".$funcName."',".$funcBody.")";
+                    foreach($func as $funcName => $funcBody) {
+                        if(strlen($funcName) && strlen($funcBody)) {
+                            $content .= ".".$event."(";
+                            $content .= "'".$funcName."',".$funcBody.")";
+                        }
+                    }
                 } else {
                     $content .= $func.")";
                 }
