@@ -1,4 +1,4 @@
-PHPUi : Open source PHP Library that let you manage CSS and JS code from behind. 
+PHPUi : Open source PHP Library that let you manage CSS and JS code from the server-side. 
 =======================================================
 
 Overview
