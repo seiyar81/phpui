@@ -1,0 +1,9 @@
+error:
+    tag: div
+    error: true
+    text: This is a div with the class <strong>.error</strong>
+
+notice:
+    tag: div
+    notice: true
+    text: This is a div with the class <strong>.notice</strong>

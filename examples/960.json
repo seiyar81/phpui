@@ -1,61 +1,85 @@
 {
-"960gs": {
-  "columns": 16,
-  "elements": ["phpui", "clear", "phpui2", "clear", "phpui3"]
-},
+    "960gs": {
+      "columns": 16,
+      "elements": {
+          "phpui": "", 
+          "clear": "", 
+          "phpui2": "", 
+          "clear": {
+                "tag": "div",
+                "class": "clear"
+            }, 
+          "phpui3": ""
+      }
+    },
 
-"clear": {
-    "tag": "div",
-    "class": "clear"
-},
+    "clear": {
+        "tag": "div",
+        "class": "clear"
+    },
 
-"phpui": {
-    "id": "phpui",
-    "tag": "div",
-    "grid": 6,
-    "push": 6,
-    "elements": ["phpui2"]
-},
+    "phpui": {
+        "id": "phpui",
+        "tag": "div",
+        "grid": 6,
+        "push": 6,
+        "elements": {
+            "": "phpui6",
+            "teeeest": {
+                "id": "teeeest",
+                "tag": "div",
+                "text": "Teeeeest"
+            }
+        }
+    },
+    
+    "teeeest":  {
+        "id": "teeeest",
+        "tag": "div"
+    },
 
-"phpui2": {
-    "id": "phpui2",
-    "tag": "div",
-    "grid": 6,
-    "push": 3,
-    "text": "roxxing div yeah !"
-},
+    "phpui2": {
+        "id": "phpui2",
+        "tag": "div",
+        "grid": 6,
+        "push": 3,
+        "text": "roxxing div yeah !"
+    },
 
-"phpui3": {
-    "id": "phpui3",
-    "tag": "div",
-    "grid": 10,
-    "push": 2,
-    "text": "roxxing div yeah !",
-    "elements": ["phpui4"]
-},
+    "phpui3": {
+        "id": "phpui3",
+        "tag": "div",
+        "grid": 10,
+        "push": 2,
+        "text": "roxxing div yeah !",
+        "elements": ["phpui4"]
+    },
 
-"phpui4": {
-    "id": "phpui4",
-    "tag": "div",
-    "grid": 5,
-    "push": 2,
-    "text": "roxxing div yeah !",
-    "elements": ["phpui5", "clear", "phpui6"]
-},
+    "phpui4": {
+        "id": "phpui4",
+        "tag": "div",
+        "grid": 5,
+        "push": 2,
+        "text": "roxxing div yeah !",
+        "file": {
+            "type": "json",
+            "filename": "include.json"
+        }
+    },
 
-"phpui5": {
-    "id": "phpui5",
-    "tag": "div",
-    "grid": 5,
-    "push": 2,
-    "text": "roxxing div yeah !"
-},
+    "phpui5": {
+        "id": "phpui5",
+        "tag": "div",
+        "grid": 5,
+        "push": 2,
+        "text": "roxxing div yeah !"
+    },
 
-"phpui6": {
-    "tag": "div",
-    "grid": 1,
-    "push": 8,
-    "text": "roxxing div yeah !"
-}
-
+    "phpui6": {
+        "tag": "div",
+        "id": "phpui6",
+        "grid": 1,
+        "push": 8,
+        "text": "roxxing div yeah !"
+    }
 }

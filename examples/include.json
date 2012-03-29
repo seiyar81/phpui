@@ -1,0 +1,22 @@
+{
+    "phpui5": {
+        "id": "phpui5",
+        "tag": "div",
+        "grid": 5,
+        "push": 2,
+        "text": "roxxing div yeah !"
+    },
+
+    "clear": {
+        "tag": "div",
+        "class": "clear"
+    },
+
+    "phpui6": {
+        "tag": "div",
+        "id": "phpui6",
+        "grid": 1,
+        "push": 8,
+        "text": "roxxing div yeah !"
+    }
+}

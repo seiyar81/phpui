@@ -1,7 +1,7 @@
 <?php 
 
-require_once 'PHPUi/Exception.php';
+namespace PHPUi\Exception;
 
-class PHPUi_Exception_ExtensionNotLoaded extends PHPUi_Exception
+class ExtensionNotLoaded extends PHPUiException
 {
 }

@@ -1,7 +1,8 @@
 <?php
 
+namespace PHPUi\Xhtml;
 
-class PHPUi_Xhtml_Element implements SplSubject
+class Element implements \SplSubject
 {
     /**
      * PHPUi_Xhtml_Element children of this element
@@ -14,6 +15,12 @@ class PHPUi_Xhtml_Element implements SplSubject
      * @var array
      */
     private $_attribs;
+    
+    /**
+     * Init attribs of this element
+     * @var array
+     */
+    private $_initAttribs;
     
     /**
      * Element tag name
@@ -40,15 +47,16 @@ class PHPUi_Xhtml_Element implements SplSubject
      * @param array $attribs
      * @param bool $closeTag 
      */
-    public function __construct($tagName = null, $attribs = null, $closeTag = true, $text = null)
+    public function __construct($tagName = 'div', $attribs = null, $closeTag = true, $text = null)
     {
         $this->_tagName = $tagName;
         $this->_closeTag = $closeTag;
+        $this->_initAttribs = $attribs;
         $this->_attribs = $attribs;
         $this->_children = null;
         
         if(null !== $text)
-            $this->addChild(new PHPUi_Xhtml_Element_Text($text));
+            $this->addChild(new Element\Text($text));
     }
     
     /**
@@ -60,7 +68,7 @@ class PHPUi_Xhtml_Element implements SplSubject
      */
     public function addChild($element, $text = '')
     {
-        if($element instanceof PHPUi_Xhtml_Element) {
+        if($element instanceof Element) {
             // If no id attrib is set then the element is just added to the array
             if($element->hasAttrib('id'))
                 $this->_children[$element->getAttrib('id')] = $element;
@@ -69,14 +77,14 @@ class PHPUi_Xhtml_Element implements SplSubject
                 
             $this->attachChild($element);
             
-            return $element;
+            return $this;
         } else if(is_string($element)) {
-            $el = new PHPUi_Xhtml_Element($element, null, true, $text);
+            $el = new Element($element, null, true, $text);
             $this->_children[] = $el;
             
             $this->attachChild($el);
             
-            return $el;
+            return $this;
         }
     }
     
@@ -84,18 +92,10 @@ class PHPUi_Xhtml_Element implements SplSubject
      * Add children elements
      *
      * @param  array
-     * @return PHPUi_Xhtml_Element
+     * @return PHPUi\Xhtml\Element
      */
-    public function addChildren($elements)
+    public function addChildren(array $elements)
     {
-        if(!is_array($elements)) {
-            /**
-              * @see PHPUi_Exception_InvalidArgument
-              */
-            require_once 'PHPUi/Exception/InvalidArgument.php';
-            throw new PHPUi_Exception_InvalidArgument('Array expected but ' . gettype($properties) . ' given');
-        }
-        
         foreach($elements as $element)
             $this->addChild($element);
         return $this;
@@ -105,7 +105,7 @@ class PHPUi_Xhtml_Element implements SplSubject
      * Retrieve child element
      *
      * @param  string $id
-     * @return PHPUi_Xhtml_Element
+     * @return mixed
      */
     public function getChild($id)
     {
@@ -116,22 +116,41 @@ class PHPUi_Xhtml_Element implements SplSubject
     }
     
     /**
+     * Check if the child element exists
+     *
+     * @param  string $id
+     * @return bool
+     */
+    public function hasChild($id)
+    {
+        return isset($this->_children[$id]);
+    }
+    
+    /**
      * Retieve all children elements
      *
-     * @param  string $name
-     * @return PHPUi_Xhtml_Element
-     * @throws PHPUi_Exception_InvalidArgument for invalid $name values
+     * @return array
      */
-    public function getChilds()
+    public function getChildren()
     {
         return $this->_children;
+    }
+    
+    /**
+     * Check if the element has some children
+     * 
+     * @return bool
+     */
+    public function hasChildren()
+    {
+        return count($this->_children) ? true : false;
     }
     
     /**
      * Remove child element
      *
      * @param  string $id
-     * @return PHPUi_Xhtml_Element
+     * @return PHPUi\Xhtml\Element
      */
     public function removeChild($id)
     {
@@ -146,14 +165,14 @@ class PHPUi_Xhtml_Element implements SplSubject
      *
      * @param  string $name
      * @param  mixed $value
-     * @return PHPUi_Xhtml_Element
-     * @throws PHPUi_Exception_InvalidArgument for invalid $name values
+     * @return PHPUi\Xhtml\Element
+     * @throws PHPUi\Exception\InvalidArgument for invalid $name values
      */
     public function setAttrib($name, $value)
     {
         $name = (string) $name;
         if ('_' == $name[0]) {
-            throw new PHPUi_Exception_InvalidArgument(sprintf('Invalid attribute "%s"; must not contain a leading underscore', $name));
+            throw new Exception\InvalidArgument(sprintf('Invalid attribute "%s"; must not contain a leading underscore', $name));
         }
 
         if (null === $value && isset($this->_attribs[$name])) {
@@ -169,12 +188,32 @@ class PHPUi_Xhtml_Element implements SplSubject
      * Set multiple attributes at once
      *
      * @param  array $attribs
-     * @return PHPUi_Xhtml_Element
+     * @return PHPUi\Xhtml\Element
      */
     public function setAttribs(array $attribs)
     {
         foreach ($attribs as $key => $value) {
             $this->setAttrib($key, $value);
+        }
+
+        return $this;
+    }
+    
+        /**
+     * Set an init element attribute
+     *
+     * @param  string $name
+     * @param  mixed $value
+     * @return PHPUi\Xhtml\Element
+     */
+    public function setInitAttrib($name, $value)
+    {
+        $name = (string) $name;
+
+        if (null === $value && isset($this->_initAttribs[$name])) {
+            unset($this->_initAttribs[$name]);
+        } else {
+            $this->_initAttribs[$name] = $value;
         }
 
         return $this;
@@ -223,6 +262,55 @@ class PHPUi_Xhtml_Element implements SplSubject
         }
         return false;
     }
+    
+    /**
+     * Check if the element has some attribs
+     * 
+     * @return bool
+     */
+    public function hasAttribs()
+    {
+        return count($this->_attribs) ? true : false;
+    }
+    
+    /**
+     * Retrieve element attribute
+     *
+     * @param  string $name
+     * @return string
+     */
+    public function getInitAttrib($name)
+    {
+        $name = (string) $name;
+        if ($this->hasInitAttribs() && $this->hasInitAttrib($name)) {
+            return $this->_initAttribs[$name];
+        }
+        return null;
+    }
+    
+    /**
+     * Test if the given attribute is present
+     *
+     * @param  string $name
+     * @return string
+     */
+    public function hasInitAttrib($name)
+    {
+        if(null != $this->_initAttribs && array_key_exists($name, $this->_initAttribs)) {
+           return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Check if the element has some init attribs
+     * 
+     * @return bool
+     */
+    public function hasInitAttribs()
+    {
+        return count($this->_initAttribs) ? true : false;
+    }
 
     /**
      * Return all attributes
@@ -250,7 +338,7 @@ class PHPUi_Xhtml_Element implements SplSubject
      * 
      * @param SplObserver
      */
-    public function attach(SplObserver $observer)
+    public function attach(\SplObserver $observer)
     {
         $this->_observers[spl_object_hash($observer)] = $observer;   
         
@@ -268,7 +356,7 @@ class PHPUi_Xhtml_Element implements SplSubject
      * 
      * @param PHPUi_Xhtml_Element
      */
-    public function attachChild(PHPUi_Xhtml_Element $element)
+    public function attachChild(Element $element)
     {
         if(count($this->_observers)) {
             foreach($this->_observers as $obs)
@@ -321,6 +409,36 @@ class PHPUi_Xhtml_Element implements SplSubject
     }
     
     /**
+     * Return an array with the element properties
+     * 
+     * @return array
+     */
+    public function toArray()
+    {
+        $array = array('tag' => $this->_tagName, 'closeTag' => $this->_closeTag);
+        
+        if(count($this->_children) == 1 && $this->_children[0] instanceof Element\Text) {
+            $array['text'] = $this->_children[0]->getText();
+            $this->_children = null;
+        } else if(count($this->_children) > 1) {
+            foreach($this->_children as $child) {
+                if($child instanceof Element\Text) {
+                    $array['text'] = $child->getText();
+                    break;
+                }
+            }
+        }
+        
+        if($this->hasInitAttribs()) {
+            foreach($this->_initAttribs as $attrib => $value) {
+                $array[$attrib] = \PHPUi\Utils::encodeValueJSON($value);
+            }
+        }
+        
+        return $array;
+    }
+    
+    /**
      * Format the current element to a Xhtml string
      * 
      * @return string
@@ -331,13 +449,31 @@ class PHPUi_Xhtml_Element implements SplSubject
         if(null !== $this->_tagName) {
             $xhtml .= $this->getOpeningTag();
             if(null !== $this->_children) {
-                foreach($this->_children as $child)
+                foreach($this->_children as $child) {
+                    if($child instanceof Element\Text) {
+                        $xhtml .= $child->getText();
+                    }
+                    else
                         $xhtml .= $child;
+                }
             }
             if($this->_closeTag)
                 $xhtml .= $this->getClosingTag();
         }
         return $xhtml;
+    }
+    
+    /**
+     * Simulates direct access to the attribs or children
+     * 
+     * @param string $name 
+     */
+    public function __get($name)
+    {
+        if($this->getAttrib($name))
+            return $this->getAttrib($name);
+        else if($this->hasChild($name))
+            return $this->getChild($name);
     }
     
     /**
@@ -349,8 +485,8 @@ class PHPUi_Xhtml_Element implements SplSubject
     {
         $xhtml = '';
         foreach ($this->_attribs as $key => $val) {
-            // Directly add PHPUi_CSS_Item content to the div
-            if($val instanceof PHPUi_CSS_Item) {
+            // Directly add PHPUi\CSS\Item content to the div
+            if($val instanceof PHPUi\CSS\Item) {
                 $xhtml .= " $key=\"".$val->toString()."\"";
             } else 
                 $xhtml .= " $key=\"$val\"";

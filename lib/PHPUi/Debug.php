@@ -1,11 +1,13 @@
 <?php
 
+namespace PHPUi;
+
 /*
  * From Zend Framework, Zend_Debug
  * <http://www.zend.com>
  */
 
-class PHPUi_Debug 
+final class Debug
 {
     /**
      * Debug helper function.  This is a wrapper for var_dump() that adds

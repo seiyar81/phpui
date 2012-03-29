@@ -21,7 +21,10 @@ rightcol:
     tag: div
     span: 12
     last: true
-    elements: [info, success]
+    file:
+        type: yml
+        filename: include.yml
+    #elements: [info, success]
 
 error:
     tag: div

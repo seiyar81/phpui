@@ -1,7 +1,10 @@
 <?php
 
+namespace PHPUi\Xhtml\Element;
 
-class PHPUi_Xhtml_Element_Br extends PHPUi_Xhtml_Element
+require_once 'PHPUi/Xhtml/Element.php';
+
+class Br extends \PHPUi\Xhtml\Element
 {
     
     /**

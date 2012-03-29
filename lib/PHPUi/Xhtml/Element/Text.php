@@ -1,7 +1,10 @@
 <?php
 
+namespace PHPUi\Xhtml\Element;
 
-class PHPUi_Xhtml_Element_Text extends PHPUi_Xhtml_Element
+require_once 'PHPUi/Xhtml/Element.php';
+
+class Text extends \PHPUi\Xhtml\Element
 {
     /**
      * Element inner text
@@ -50,10 +53,7 @@ class PHPUi_Xhtml_Element_Text extends PHPUi_Xhtml_Element
      */
     public function __toString()
     {
-        if(null !== $this->_text)
-            return $this->_text;
-        else
-            return '';
+        return $this->getText();
     }
     
 }

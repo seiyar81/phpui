@@ -1,6 +1,8 @@
 <?php
 
-final class PHPUi_CSS
+namespace PHPUi;
+
+final class CSS
 {
     /**
      * @var int Parse type constant, inline

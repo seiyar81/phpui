@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 /* PHPUnit
  *
@@ -34,9 +33,14 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+// Ensure library/ is on include_path
+set_include_path(implode(PATH_SEPARATOR, array(
+    realpath(APPLICATION_PATH . '/../library')
+)));
 
 require_once 'PHP/CodeCoverage/Filter.php';
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
+//PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
 
 if (extension_loaded('xdebug')) {
     xdebug_disable();
