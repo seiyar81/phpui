@@ -20,6 +20,13 @@ abstract class AdapterAbstract implements \SplObserver
     protected $_config = array();
     
     /**
+     * Adapter ID
+     *
+     * @var array
+     */
+    protected $_id;
+    
+    /**
      * Constructor.
      *
      * @param array $config 
@@ -32,9 +39,8 @@ abstract class AdapterAbstract implements \SplObserver
          */
         if (!is_array($config)) {
                 /**
-                 * @see PHPUi_Exception_InvalidArgument
+                 * @see PHPUi\Exception\InvalidArgument
                  */
-                require_once 'PHPUi/Exception/InvalidArgument.php';
                 throw new PHPUi\Exception\InvalidArgument('Adapter parameters must be in an array');
         }
         
@@ -53,16 +59,19 @@ abstract class AdapterAbstract implements \SplObserver
     {
         if(!$subject instanceof PHPUi_Xhtml_Element) {
             /**
-              * @see PHPUi_Exception_InvalidArgument
+              * @see PHPUi\Exception\InvalidArgument
               */
-              require_once 'PHPUi/Exception/InvalidArgument.php';
               throw new PHPUi\Exception\InvalidArgument("Subject has to be PHPUi\Xhtml\Element instance");    
         }
     }
     
-    public function getName()
+    /**
+     * Return the actuel adapter ID
+     * @return type 
+     */
+    public function getAdapterId()
     {
-        return $this->_config['name'];
+        return $this->_id;
     }
 
 
@@ -77,9 +86,8 @@ abstract class AdapterAbstract implements \SplObserver
     {
         if(!array_key_exists('name', $config)) {
             /**
-             * @see PHPUi_Exception_MissingArgument
+             * @see PHPUi\Exception\MissingArgument
              */
-            require_once 'PHPUi/Exception/MissingArgument.php';
             throw new PHPUi\Exception\MissingArgument("Configuration array must have the key 'name' to define the adaptater's name");    
         }
     }

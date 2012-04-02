@@ -1,5 +1,6 @@
 <?php
 
+use PHPUi\Xhtml\Adapter\AdapterAbstract;
 namespace PHPUi;
 
 use PHPUi\Xhtml\Adapter;
@@ -17,29 +18,29 @@ final class PHPUi
     private $_cache = null;
     
     /**
+     * @var string
+     */
+    private $_fileExtension = '.php';
+    
+    /**
+     * @var string
+     */
+    private $_namespace = 'PHPUi';
+    
+    /**
+     * @var string
+     */
+    private $_includePath;
+    
+    /**
+     * @var string
+     */
+    private $_namespaceSeparator = '\\';
+    
+    /**
      * @var array
-    */
-    private $_registeredAdapters = null;
-    
-    /**
-     * @var string
      */
-    private $fileExtension = '.php';
-    
-    /**
-     * @var string
-     */
-    private $namespace = 'PHPUi';
-    
-    /**
-     * @var string
-     */
-    private $includePath;
-    
-    /**
-     * @var string
-     */
-    private $namespaceSeparator = '\\';
+    private $_registeredAdapters = array();
     
     /**
      * Get the unique instance of PHPUi_Config
@@ -66,22 +67,10 @@ final class PHPUi
     public function bootstrap()
     {
         // Register built-in autoloader
-        spl_autoload_register(array(__CLASS__, 'includePHPUi'));
-    }
-
-    public function includePHPUi($className)
-    {
-        if ($this->namespace !== null && strpos($className, $this->namespace.$this->namespaceSeparator) !== false) {
-            require_once str_replace($this->namespaceSeparator, DIRECTORY_SEPARATOR, $className)
-               . $this->fileExtension;
-            return true;
-        }
-
-        require_once ($this->includePath !== null ? $this->includePath . DIRECTORY_SEPARATOR : '')
-               . str_replace($this->namespaceSeparator, DIRECTORY_SEPARATOR, $className)
-               . $this->fileExtension;
+        spl_autoload_register(array(__CLASS__, '__autoload'));
         
-        return true;
+        // Automatically adds the adapters in the Xhtml\Adapter folder
+        $this->_autoloadXhtmlAdapters();
     }
     
     /**
@@ -95,7 +84,6 @@ final class PHPUi
             /**
              * @see PHPUi/Exception/InvalidArgument
              */
-            require_once('PHPUi/Exception/InvalidArgument.php');
             throw new Exception\InvalidArgument('Instance of Cache\Storage\AbstractStorage expected but '.  get_class($cache) .' given');
           } else {
             $this->_cache = $cache;   
@@ -119,12 +107,79 @@ final class PHPUi
     {
         return $this->_cache !== null;
     }
-   
-    public function registerAdapter(Adapter\AbstractAdapter $adapter)
+    
+    /**
+     * Register an adapter class into the library
+     * @param PHPUi\Xhtml\Adapter $adapter 
+     */
+    public function registerAdapter(PHPUi\Xhtml\Adapter $adapter)
     {
-        if(!array_key_exists($this->_registeredAdapters)) {
-            $this->_registeredAdapters[$adapter->getName()] = $adapter;
+        $this->_registeredAdapters[$adapter->getAdapterId()] = $adapter;
+    }
+    
+    /**
+     * Return the actual lists of registered adapters
+     * @return array
+     */
+    public function getRegisteredAdapters()
+    {
+        return $this->_registeredAdapters;
+    }
+    
+    /**
+     * Builds an adapter with the given name and configuration
+     * @param string $adapterName
+     * @param array $config
+     * @return AdapterAbstract|null
+     */
+    public function getAdapter($adapterName, $config = null)
+    {
+        if(array_key_exists($adapterName, $this->_registeredAdapters)) {
+            $adapter = $this->_registeredAdapters[$adapterName];
+            if(array_key_exists('className', $adapter)) {
+                return new $adapter['className']($config);
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Autoload the current adapters available in the library
+     */
+    private function _autoloadXhtmlAdapters()
+    {
+        if ($dh = opendir(realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Xhtml' . DIRECTORY_SEPARATOR . 'Adapter'))) {
+            // Loop through all the files
+            while (($file = readdir($dh)) !== false) {
+                if( ($file !== ".") && ($file !== "..") && strlen($file) > 0) {
+                    // If this is a PHP file named with Adapter
+                    if(preg_match('#^Adapter(.*)\.(php)$#i', $file, $matches) && $matches[1] != 'Abstract') {
+                        $this->_registeredAdapters[strtolower($matches[1])] = array('className' => 'PHPUi\Xhtml\Adapter\Adapter'.$matches[1]);
+                    }
+                }
+            }
         }
     }
     
+    /**
+     * Autoload function used to load a specific class
+     * @param string $className
+     * @return bool 
+     */
+    private function __autoload($className)
+    {
+        if ($this->_namespace !== null && strpos($className, $this->_namespace.$this->_namespaceSeparator) !== false) {
+            require_once str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $className)
+               . $this->_fileExtension;
+
+            return true;
+        }
+
+        require_once ($this->_includePath !== null ? $this->_includePath . DIRECTORY_SEPARATOR : '')
+               . str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $className)
+               . $this->_fileExtension;
+      
+        return true;
+    } 
+   
 }

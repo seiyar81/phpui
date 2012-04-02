@@ -19,6 +19,13 @@ class AdapterBlueprint extends AdapterAbstract
     protected $_rootElement;
     
     /**
+     * Adapter ID
+     *
+     * @var array
+     */
+    protected $_id = 'blueprint';
+    
+    /**
      * All classes needed to build the grid
      * 
      * @var array
