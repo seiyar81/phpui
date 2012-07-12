@@ -1,6 +1,5 @@
 <?php
 
-use PHPUi\Xhtml\Adapter\AdapterAbstract;
 namespace PHPUi;
 
 use PHPUi\Xhtml\Adapter;
@@ -126,13 +125,7 @@ final class PHPUi
         return $this->_registeredAdapters;
     }
     
-    /**
-     * Builds an adapter with the given name and configuration
-     * @param string $adapterName
-     * @param array $config
-     * @return AdapterAbstract|null
-     */
-    public function getAdapter($adapterName, $config = null)
+    public function newAdapter($adapterName, $config = null)
     {
         if(array_key_exists($adapterName, $this->_registeredAdapters)) {
             $adapter = $this->_registeredAdapters[$adapterName];
@@ -141,6 +134,23 @@ final class PHPUi
             }
         }
         return null;
+    }
+    
+    public function __call($method, $args)
+    {
+        if(array_key_exists($method, $this->_registeredAdapters)) {
+            $adapter = $this->_registeredAdapters[$method];
+            if(array_key_exists('className', $adapter)) {
+                return new $adapter['className']($config);
+            } else {
+                return null;
+            }
+        } else {
+            /**
+             * @see PHPUi/Exception/InvalidArgument
+             */
+            throw new Exception\InvalidArgument('Call to an undefined method : ' . $method);
+        }
     }
     
     /**

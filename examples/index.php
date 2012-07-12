@@ -29,12 +29,18 @@
     
     <!-- Blueprint CSS Files -->
     <link type="text/css" media="screen" rel="stylesheet" href="css/blueprint.css" />
+    
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 </head>
 <body>
-    
+    <br />
     <?php
-        $cache = new Cache\Storage\ArrayStorage();
+        if(extension_loaded('apc'))
+            $cache = new Cache\Storage\ApcStorage();
+        else
+            $cache = new Cache\Storage\ArrayStorage();
         PHPUi::getInstance()->setCache($cache);
+        echo 'Cache : ' . get_class(PHPUi::getInstance()->getCache());
         $cache->save("test", array(1,2,3,4,5));
         Debug::dump($cache->fetch("test"));
         Debug::dump($cache->test);
@@ -81,14 +87,19 @@
 
         Debug::dump(PHPUi::getInstance()->getRegisteredAdapters());
         
-        $gs = PHPUi::getInstance()->getAdapter('960gs', array('columns' => 16));
+        $gs = PHPUi::getInstance()->newAdapter('960gs', array('columns' => 16));
         $gs->addChild(new Xhtml\Element('h2', null, true, '16 Column Grid - 960Gs'));
         $gs->addChild(new Xhtml\Element('div', array('push' => 6, 'grid' => 6), true, 'Hello world'));
+        $gs->click('alert("Click on 960gs div !")');
         echo $gs;
         
-        $blue = PHPUi::getInstance()->getAdapter('blueprint', array('showgrid'));
+        $blue = PHPUi::getInstance()->newAdapter('blueprint', array('showgrid' => true, 'id' => 'blueprint'));
         $blue->addChild(new Xhtml\Element('h2', array('span' => 24), true, '24 Column Grid - Blueprint'));
         $blue->addChild(new Xhtml\Element('div', array('push' => 9, 'span' => 6), true, 'Hello world'));
+        $blue->hover('$(this).css("color", "red")', '$(this).css("color", "inherit")');        
+        $blue->bind('click', 'function() { $(this).css("color", "green") }');
+        $blue->css('color', 'blue');
+        $blue->after(new Xhtml\Element('div', array(), true, 'Hello world'));
         echo $blue;
     ?>
     

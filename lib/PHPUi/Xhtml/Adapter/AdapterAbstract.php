@@ -2,6 +2,10 @@
 
 namespace PHPUi\Xhtml\Adapter;
 
+use PHPUi\PHPUi,
+    PHPUi\Exception,
+    PHPUi\Xhtml;
+
 abstract class AdapterAbstract implements \SplObserver
 {
     
@@ -22,7 +26,7 @@ abstract class AdapterAbstract implements \SplObserver
     /**
      * Adapter ID
      *
-     * @var array
+     * @var string
      */
     protected $_id;
     
@@ -32,21 +36,13 @@ abstract class AdapterAbstract implements \SplObserver
      * @param array $config 
      * @throws PHPUi_Exception_InvalidArgument
      */
-    public function __construct($config = array())
+    public function __construct($config = null)
     {
-        /*
-         * Verify that adapter parameters are in an array.
-         */
-        if (!is_array($config)) {
-                /**
-                 * @see PHPUi\Exception\InvalidArgument
-                 */
-                throw new PHPUi\Exception\InvalidArgument('Adapter parameters must be in an array');
+        if(!is_null($config)) {
+            $this->_checkRequiredOptions($config);
+        
+            $this->_config = array_merge($this->_config, $config);
         }
-        
-        $this->_checkRequiredOptions($config);
-        
-        $this->_config = array_merge($this->_config, $config);
     }
     
     
@@ -61,7 +57,7 @@ abstract class AdapterAbstract implements \SplObserver
             /**
               * @see PHPUi\Exception\InvalidArgument
               */
-              throw new PHPUi\Exception\InvalidArgument("Subject has to be PHPUi\Xhtml\Element instance");    
+              throw new Exception\InvalidArgument("Subject has to be PHPUi\Xhtml\Element instance");    
         }
     }
     
@@ -82,23 +78,23 @@ abstract class AdapterAbstract implements \SplObserver
      * @param array $config
      * @throws PHPUi_Exception_MissingArgument
      */
-    protected function _checkRequiredOptions(array $config)
-    {
-        if(!array_key_exists('name', $config)) {
-            /**
-             * @see PHPUi\Exception\MissingArgument
-             */
-            throw new PHPUi\Exception\MissingArgument("Configuration array must have the key 'name' to define the adaptater's name");    
-        }
-    }
+    protected function _checkRequiredOptions(array $config) {}
     
+    public function __call($method, $args)
+    {
+        if(null !== $this->_rootElement->id)
+            array_unshift($args, '#'.$this->_rootElement->id);
+        else if(null !== $this->_rootElement->class)
+            array_unshift($args, '.'.$this->_rootElement->class);
+        
+        $this->_rootElement->addChild(PHPUi::getInstance()->jquery()->{$method}($args));
+        
+        return $this;
+    }
     
     /**
-     * Print the current Grid object
+     * Print the root element
      */
-    public function __toString()
-    {    
-        return $this->_rootElement->__toString();
-    }
+    abstract public function __toString();
     
 }

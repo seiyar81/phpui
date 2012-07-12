@@ -21,7 +21,7 @@ class Adapter960Gs extends AdapterAbstract
     /**
      * Adapter ID
      *
-     * @var array
+     * @var string
      */
     protected $_id = '960gs';
     
@@ -44,7 +44,7 @@ class Adapter960Gs extends AdapterAbstract
         parent::__construct($config);
         
         $this->_rootElement = new Xhtml\Element('div', array('class' => 'container_'.$this->_config['columns']));
-        $this->_rootElement->setInitAttrib('columns', $this->_config['columns']);
+        $this->_rootElement->setInitAttribs(array_merge(array('columns', $this->_config['columns']), $config));
     }
     
     /**
@@ -125,12 +125,10 @@ class Adapter960Gs extends AdapterAbstract
     }
     
     /**
-     * Print the current Grid object
+     * Print the current root element
      */
     public function __toString()
     {
-        $this->_checkRequiredOptions($this->_config);
-        
         return $this->_rootElement->__toString();
     }
     

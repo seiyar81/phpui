@@ -199,7 +199,7 @@ class Element implements \SplSubject
         return $this;
     }
     
-        /**
+    /**
      * Set an init element attribute
      *
      * @param  string $name
@@ -215,6 +215,23 @@ class Element implements \SplSubject
         } else {
             $this->_initAttribs[$name] = $value;
         }
+
+        return $this;
+    }
+    
+    /**
+     * Set all init element attributes
+     *
+     * @param  array $attribs
+     * @return PHPUi\Xhtml\Element
+     */
+    public function setInitAttribs($attribs)
+    {
+        if(!is_array($attribs)) {
+            throw new Exception\InvalidArgument('Array expected but ' . get_class($attribs) . ' given.');
+        }
+        
+        $this->_initAttribs = array_merge($this->_initAttribs, $attribs);
 
         return $this;
     }
@@ -474,6 +491,8 @@ class Element implements \SplSubject
             return $this->getAttrib($name);
         else if($this->hasChild($name))
             return $this->getChild($name);
+        else
+            return null;
     }
     
     /**
@@ -494,4 +513,13 @@ class Element implements \SplSubject
         return $xhtml;
     }
     
+    
+    public function __call($method, $args)
+    {
+        if(null !== $this->_rootElement->id)
+            array_unshift($args, '#'.$this->_rootElement->id);
+        else if(null !== $this->_rootElement->class)
+            array_unshift($args, '.'.$this->_rootElement->class);
+        $this->addChild(PHPUi::getInstance()->jquery()->{$method}($args));
+    }
 }

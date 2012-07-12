@@ -21,7 +21,7 @@ class AdapterBlueprint extends AdapterAbstract
     /**
      * Adapter ID
      *
-     * @var array
+     * @var string
      */
     protected $_id = 'blueprint';
     
@@ -44,14 +44,14 @@ class AdapterBlueprint extends AdapterAbstract
     {
         parent::__construct($config);
         
-        if(in_array('showgrid', $config))
+        if(in_array('showgrid', $config)) {
           $classes = 'container showgrid';
+          unset($config['showgrid']);
+        }
         else
           $classes = 'container';
         
-        $this->_rootElement = new Xhtml\Element('div', array('class' => $classes));
-        if(in_array('showgrid', $config))
-            $this->_rootElement->setInitAttrib('showgrid', true);
+        $this->_rootElement = new Xhtml\Element('div', array_merge(array('class' => $classes), $config));
     }
     
     /**
@@ -132,7 +132,7 @@ class AdapterBlueprint extends AdapterAbstract
     }
     
     /**
-     * Print the current Grid object
+     * Print the current root element
      */
     public function __toString()
     {    
