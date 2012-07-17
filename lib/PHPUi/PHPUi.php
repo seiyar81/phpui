@@ -42,6 +42,11 @@ final class PHPUi
     private $_registeredAdapters = array();
     
     /**
+     * @var array
+     */
+    private $_registeredLoaders = array();
+    
+    /**
      * Get the unique instance of PHPUi_Config
      * @return PHPUi_Config 
      */
@@ -70,6 +75,9 @@ final class PHPUi
         
         // Automatically adds the adapters in the Xhtml\Adapter folder
         $this->_autoloadXhtmlAdapters();
+        
+        // Automatically adds the adapters in the Xhtml\Adapter folder
+        $this->_autoloadXhtmlLoaders();
     }
     
     /**
@@ -109,11 +117,20 @@ final class PHPUi
     
     /**
      * Register an adapter class into the library
-     * @param PHPUi\Xhtml\Adapter $adapter 
+     * @param PHPUi\Xhtml\Adapter\AdapterAbstract $adapter 
      */
-    public function registerAdapter(PHPUi\Xhtml\Adapter $adapter)
+    public function registerAdapter(PHPUi\Xhtml\Adapter\AdapterAbstract $adapter)
     {
         $this->_registeredAdapters[$adapter->getAdapterId()] = $adapter;
+    }
+    
+    /**
+     * Register an adapter class into the library
+     * @param PHPUi\Xhtml\Loader\LoaderAbstract $adapter 
+     */
+    public function registerLoader(PHPUi\Xhtml\Loader\LoaderAbstract $loader)
+    {
+        $this->_registeredLoaders[$loader->getLoaderId()] = $loader;
     }
     
     /**
@@ -123,6 +140,63 @@ final class PHPUi
     public function getRegisteredAdapters()
     {
         return $this->_registeredAdapters;
+    }
+    
+    /**
+     * Return the actual lists of registered adapters
+     * @return array
+     */
+    public function getRegisteredLoaders()
+    {
+        return $this->_registeredLoaders;
+    }
+    
+    /**
+     * Return the actual lists of registered adapters
+     * @return array
+     */
+    public function isAdapterRegistered($adapterName)
+    {
+        return (array_key_exists($adapterName, $this->_registeredAdapters));
+    }
+    
+    /**
+     * Return the actual lists of registered loaders
+     * @return array
+     */
+    public function isLoaderRegistered($loaderName)
+    {
+        return (array_key_exists($loaderName, $this->_registeredLoaders));
+    }
+    
+    public function getAdapterClass($adapterName)
+    {
+        if(array_key_exists($adapterName, $this->_registeredAdapters))
+        {
+            $adapter = $this->_registeredAdapters[$adapterName];
+            if(array_key_exists('className', $adapter)) {
+                return $adapter['className'];
+            } else {
+                return null;
+            }
+        }
+        else
+            return null;
+    }
+    
+    public function getLoaderClass($loaderName)
+    {
+        if(array_key_exists($loaderName, $this->_registeredLoaders))
+        {
+            $loader = $this->_registeredLoaders[$loaderName];
+            if(array_key_exists('className', $loader)) {
+                return $loader['className'];
+            } else {
+                return null;
+            }
+        }
+        else
+            return null;
     }
     
     public function newAdapter($adapterName, $config = null)
@@ -136,20 +210,40 @@ final class PHPUi
         return null;
     }
     
+    public function newLoader($loaderName, $config = null)
+    {
+        if(array_key_exists($loaderName, $this->_registeredLoaders)) {
+            $loader = $this->_registeredLoaders[$loaderName];
+            if(array_key_exists('className', $loader)) {
+                return new $loader['className']($config);
+            }
+        }
+        return null;
+    }
+    
     public function __call($method, $args)
     {
         if(array_key_exists($method, $this->_registeredAdapters)) {
             $adapter = $this->_registeredAdapters[$method];
             if(array_key_exists('className', $adapter)) {
-                return new $adapter['className']($config);
+                return new $adapter['className']($args[0]);
             } else {
                 return null;
             }
-        } else {
+        }
+        else if(array_key_exists($method, $this->_registeredLoaders)) {
+            $loader = $this->_registeredLoaders[$method];
+            if(array_key_exists('className', $loader)) {
+                return new $loader['className']($args[0]);
+            } else {
+                return null;
+            }
+        }
+        else {
             /**
-             * @see PHPUi/Exception/InvalidArgument
+             * @see PHPUi/Exception/UndefinedMethod
              */
-            throw new Exception\InvalidArgument('Call to an undefined method : ' . $method);
+            throw new Exception\UndefinedMethod('Call to an undefined method : ' . $method);
         }
     }
     
@@ -158,13 +252,41 @@ final class PHPUi
      */
     private function _autoloadXhtmlAdapters()
     {
-        if ($dh = opendir(realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Xhtml' . DIRECTORY_SEPARATOR . 'Adapter'))) {
+        $dh = opendir(realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Xhtml' . DIRECTORY_SEPARATOR . 'Adapter'));
+        if (false !== $dh) {
             // Loop through all the files
             while (($file = readdir($dh)) !== false) {
                 if( ($file !== ".") && ($file !== "..") && strlen($file) > 0) {
                     // If this is a PHP file named with Adapter
-                    if(preg_match('#^Adapter(.*)\.(php)$#i', $file, $matches) && $matches[1] != 'Abstract') {
-                        $this->_registeredAdapters[strtolower($matches[1])] = array('className' => 'PHPUi\Xhtml\Adapter\Adapter'.$matches[1]);
+                    $matches = array();
+                    if(preg_match('#^Adapter(.*)\.(php)$#i', $file, $matches) && $matches[1] != 'Abstract') 
+                    {
+                        $fullID = $matches[1];
+                        $adapterID = preg_replace('/[0-9]/i', '', $matches[1]);
+                        $this->_registeredAdapters[strtolower($adapterID)] = array('className' => 'PHPUi\Xhtml\Adapter\Adapter'.$fullID);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Autoload the current loaders available in the library
+     */
+    private function _autoloadXhtmlLoaders()
+    {
+        $dh = opendir(realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Xhtml' . DIRECTORY_SEPARATOR . 'Loader'));
+        if (false !== $dh) {
+            // Loop through all the files
+            while (($file = readdir($dh)) !== false) {
+                if( ($file !== ".") && ($file !== "..") && strlen($file) > 0) {
+                    // If this is a PHP file named with Adapter
+                    $matches = array();
+                    if(preg_match('#^Loader(.*)\.(php)$#i', $file, $matches) && $matches[1] != 'Abstract') 
+                    {
+                        $fullID = $matches[1];
+                        $loaderID = preg_replace('/[0-9]/i', '', $matches[1]);
+                        $this->_registeredLoaders[strtolower($loaderID)] = array('className' => 'PHPUi\Xhtml\Loader\Loader'.$fullID);
                     }
                 }
             }

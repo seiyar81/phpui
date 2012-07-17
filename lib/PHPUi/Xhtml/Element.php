@@ -361,7 +361,9 @@ class Element implements \SplSubject
         
         if(count($this->_children)) {
             foreach($this->_children as $child)
+            {
                 $child->attach($observer); 
+            }
         }
         
         // Notify all attached observers
@@ -520,6 +522,5 @@ class Element implements \SplSubject
             array_unshift($args, '#'.$this->_rootElement->id);
         else if(null !== $this->_rootElement->class)
             array_unshift($args, '.'.$this->_rootElement->class);
-        $this->addChild(PHPUi::getInstance()->jquery()->{$method}($args));
     }
 }

@@ -15,8 +15,11 @@ final class Utils
      * @param mixed $array
      * @return string 
      */
-    public static function encodeJSON($array)
+    public static function encodeJSON($array, $forceObject = false)
     {
+        self::$_replace_array_keys = array();
+        self::$_value_array        = array();
+        
         if(!is_array($array) && !is_object($array)) {
             $array = array($array);
         }
@@ -24,7 +27,9 @@ final class Utils
         self::encodeArray($array);
 
         // Now encode the array to json format
-        $json = json_encode($array, JSON_NUMERIC_CHECK | JSON_FORCE_OBJECT);
+        $flags = true === $forceObject ? JSON_NUMERIC_CHECK | JSON_FORCE_OBJECT : JSON_NUMERIC_CHECK;
+        
+        $json = json_encode($array, $flags);
 
         $json = str_replace(self::$_replace_array_keys, self::$_value_array, $json);
         
@@ -51,18 +56,28 @@ final class Utils
      */
     private static function encodeArray(&$array)
     {
-          foreach($array as $key => &$value) {
-              // Look for values starting with 'function('
-              if(!is_array($value) && strpos($value, 'function(') === 0) {
+        foreach($array as $key => &$value) 
+        {
+            // Look for values starting with 'function('
+            if(!is_array($value) && strpos($value, 'function(') === 0) 
+            {
                 // Store function string.
                 self::$_value_array[] = $value;
                 // Replace function string in $foo with a 'unique' special key.
                 $value = '%' . $key . '%';
                 // Later on, we'll look for the value, and replace it.
                 self::$_replace_array_keys[] = '"' . $value . '"';
-              } else if(is_array($value)) {
-                  self::encodeArray($value);
-              }
+            } else if(is_object($value)) 
+            {
+                // Only place objects that can be converted to string
+                self::$_value_array[] = $value->__toString();
+                // Replace function string in $foo with a 'unique' special key.
+                $value = '%' . $key . '%';
+                // Later on, we'll look for the value, and replace it.
+                self::$_replace_array_keys[] = '"' . $value . '"';
+            } else if(is_array($value)) {
+                self::encodeArray($value);
+            }
         }
     }
     

@@ -5,7 +5,8 @@
  */
 namespace PHPUi\Xhtml\Adapter;
 
-use PHPUi\Exception,
+use PHPUi\PHPUi,
+    PHPUi\Exception,
     PHPUi\Xhtml;
 
 class AdapterBlueprint extends AdapterAbstract
@@ -132,11 +133,60 @@ class AdapterBlueprint extends AdapterAbstract
     }
     
     /**
+     * Load a Blueprint Adapter based on loaded config
+     *
+     * @return bool|PHPUi\Xhtml\Adapter\Blueprint
+     */
+    public static function load(array $config, \PHPUi\Xhtml\Element $root = null)
+    {
+           $blueConfig = $config['blueprint'];
+           $blue = new self(array_key_exists('showgrid', $blueConfig) ? array('showgrid') : array());
+               if(array_key_exists('elements', $blueConfig)) {
+                   foreach($blueConfig['elements'] as $index => $element) {
+                       if(is_string($element)) {
+                           $elConfig = array_key_exists($element, $config) ? $config[$element] : array();
+                       } else if(is_array($element)) {
+                           $elConfig = $element;
+                       } else if(is_string($index) && strlen($index)) {
+                           $elConfig = array_key_exists($index, $config) ? $config[$index] : array();
+                       }
+                       //$elConfig = array_key_exists($element, $this->_content) ? $this->_content[$element] : array();
+                       $tagName = array_key_exists('tag', $elConfig) ? $elConfig['tag'] : 'div';
+                       $closeTag = array_key_exists('closeTag', $elConfig) ? $elConfig['closeTag'] : true;
+                       $text = array_key_exists('text', $elConfig) && $elConfig['text'] !== true ? $elConfig['text'] : null;
+                   
+                       $el = new \PHPUi\Xhtml\Element($tagName, \PHPUi\Xhtml\Loader\LoaderAbstract::cleanElementConfig($elConfig),
+                                                $closeTag, $text);
+                       
+                       if(array_key_exists('elements', $elConfig)) 
+                       {
+                          $items = \PHPUi\Xhtml\Loader\LoaderAbstract::loadElements($elConfig['elements'], $blue);
+                          $blue->addChild($el, $items);
+                       } 
+                       else if(array_key_exists('file', $elConfig) && array_key_exists('type', $elConfig['file'])) 
+                       {
+                            if(\PHPUi\PHPUi::getInstance()->isLoaderRegistered($elConfig['file']['type']))
+                            {
+                                $loader = \PHPUi\PHPUi::getInstance()->newLoader($elConfig['file']['type'], array('filename' => $elConfig['file']['filename']));
+                                $el->addChildren($loader->load());
+                            }
+                       } 
+                       else
+                          $blue->addChild($el);
+                   }
+               }
+            return $blue;
+    }
+    
+    /**
      * Print the current root element
      */
     public function __toString()
     {    
-        return $this->_rootElement->__toString();
+        $html = $this->_rootElement->__toString();
+        foreach($this->_attachedAdapters as $adapter)
+            $html .= $adapter;
+        return $html;
     }
     
     /**

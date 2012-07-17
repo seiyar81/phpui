@@ -1,29 +1,35 @@
 <?php
-function component($max)
-{
-    return str_pad(dechex($max),2,'0',STR_PAD_LEFT);
-}
-function getRandomColorHex($max_r, $max_g, $max_b)
-{
-    // generate and return the random color
-    return '#' . component($max_r) . component($max_g) . component($max_b);
-}
-
     set_include_path(implode(PATH_SEPARATOR, array(
 	    realpath('../lib/'),
-	    get_include_path(),
+	    get_include_path()
 	)));
 
-    require_once 'PHPUi/CSS.php';
-    require_once 'PHPUi/CSS/Item.php';
+    require_once 'PHPUi/PHPUi.php';
     
-    $color = 
+    use PHPUi\PHPUi,
+        PHPUi\Cache,
+        PHPUi\Exception,
+        PHPUi\CSS,
+        PHPUi\Debug,
+        PHPUi\Utils,
+        PHPUi\Xhtml;
     
-    $item = new PHPUi_CSS_Item("#myinput2", array('background-color' => getRandomColorHex(rand(0,255), rand(0,255), rand(0,255)), 
-            'width' => rand(120, 200).'px'));
-    $item2 = new PHPUi_CSS_Item("apeControllerDemo", array('background-color' => getRandomColorHex(rand(0,255), rand(0,255), rand(0,255))));
-    $item3 = new PHPUi_CSS_Item("#test", array('background-color' => getRandomColorHex(rand(0,255), rand(0,255), rand(0,255))));
+    PHPUi::getInstance()->bootstrap();
     
-    echo json_encode(array($item->toArray(), $item2->toArray(), $item3->toArray()));
-    //echo $item->toJson();
+    //$lJson = new Xhtml\Loader\LoaderJson(array('filename' => 'include.json'));
+    
+    $lArray = new Xhtml\Loader\LoaderArray(array('content' => Utils::decodeJson($_POST['html'])));
+    
+    $children = $lArray->load()->getRootElement()->getChildren();
+    
+    foreach($children as $child)
+        echo $child;
+    /*$array = array();
+    
+    foreach($lArray->load() as $el)
+        $array['html'][] = $el->__toString();
+    
+    echo Utils::encodeJson($array);*/
+    
+    
 ?>

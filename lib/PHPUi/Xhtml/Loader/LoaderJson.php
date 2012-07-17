@@ -1,11 +1,8 @@
 <?php
 
-/**
- * @see PHPUi_Xhtml_Loader_Abstract
- */
-require_once 'PHPUi/Xhtml/Loader/Abstract.php';
+namespace PHPUi\Xhtml\Loader;
 
-class PHPUi_Xhtml_Loader_Json extends PHPUi_Xhtml_Loader_Abstract
+class LoaderJson extends LoaderAbstract
 {
 
     /**
@@ -15,26 +12,24 @@ class PHPUi_Xhtml_Loader_Json extends PHPUi_Xhtml_Loader_Abstract
     {
         parent::__construct($config);
         
-        
         if(array_key_exists('filename', $config)) {
-            if($handler = fopen($this->_config['filename'], 'r')) {
-                $content = PHPUi_JS::decode(file_get_contents($this->_config['filename']));
+            if(is_file($this->_config['filename'])) {
+                $content = \PHPUi\Utils::decodeJSON(file_get_contents($this->_config['filename']));
                 if(is_array($content)) {
                      $this->_content = $content;
                 } else {
                      trigger_error($this->_lastJsonError().', File : '.$this->_config['filename'], E_USER_ERROR);
                 }
-                fclose($handler);
             } else {
                /**
                 * @see PHPUi_Exception_MissingFile
                 */
-                require_once 'PHPUi/Exception/MissingFile.php';
-                throw new PHPUi_Exception_MissingFile("Couldn't open file ".$this->_config['filename']);   
+                require_once "PHPUi\Exception\MissingFile.php";
+                throw new \PHPUi\Exception\MissingFile("Couldn't open file ".$this->_config['filename']);   
             }
         } 
         else if(array_key_exists('content', $config)) {
-             $content = PHPUi_JS::decode(file_get_contents($this->_config['content']));
+             $content = \PHPUi\Utils::decodeJSON(file_get_contents($this->_config['content']));
              if(is_array($content)) {
                 $this->_content = $content;
             }
@@ -83,7 +78,7 @@ class PHPUi_Xhtml_Loader_Json extends PHPUi_Xhtml_Loader_Abstract
              * @see PHPUi_Exception_ExtensionNotLoaded
              */
             require_once 'PHPUi/Exception/ExtensionNotLoaded.php';
-            throw new PHPUi_Exception_ExtensionNotLoaded('Json extension not loaded.');
+            throw new \PHPUi\Exception\ExtensionNotLoaded('Json extension not loaded.');
         }
         
         if(array_key_exists('filename', $config) && !is_file($config['filename'])) {
@@ -91,14 +86,14 @@ class PHPUi_Xhtml_Loader_Json extends PHPUi_Xhtml_Loader_Abstract
              * @see PHPUi_Exception_MissingFile
              */
             require_once 'PHPUi/Exception/MissingFile.php';
-            throw new PHPUi_Exception_MissingFile("Provided file doesn't exists");    
+            throw new \PHPUi\Exception\MissingFile("Provided file doesn't exists");    
         } 
         else if(!array_key_exists('filename', $config) && !array_key_exists('content', $config)) {
             /**
              * @see PHPUi_Exception_MissingArgument
              */
             require_once 'PHPUi/Exception/MissingArgument.php';
-            throw new PHPUi_Exception_MissingArgument("If there is no file provided, a content should be at least.");      
+            throw new \PHPUi\Exception\MissingArgument("A file or a content must be provided.");      
         }
     }
 

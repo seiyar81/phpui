@@ -30,7 +30,7 @@
     <!-- Blueprint CSS Files -->
     <link type="text/css" media="screen" rel="stylesheet" href="css/blueprint.css" />
     
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
 </head>
 <body>
     <br />
@@ -47,34 +47,130 @@
 
         try {
             $ex = new Exception\ExtensionNotLoaded('Test !');
-        throw $ex;
+            throw $ex;
         } catch(Exception\ExtensionNotLoaded $e) {
+            echo 'Exception catched : ' . $e->getMessage() . '<br />';
+        }
+        
+        try {
+            $loader = new Xhtml\Loader\LoaderYaml(array('filename' => 'include.yml'));
+        } catch(Exception\ExtensionNotLoaded $e) {
+            echo 'Exception catched : ' . $e->getMessage() . '<br />';
+        } catch(Exception\MissingArgument $e) {
             echo 'Exception catched : ' . $e->getMessage() . '<br />';
         }
                 
         $jsonString = '{
-                          "phpui_1": {
-                                "id": "phpui_1",
-                                "tag": "div",
-                                "grid": 5,
-                                "push": 2,
-                                "text": "Roxxing div Yeah !"
-                          },
+                         "gs" : {
+                            "columns" : 16,
+                            "elements": {
+                            
+                                "clear": {
+                                        "tag": "div",
+                                        "class": "clear"
+                                },
 
-                          "clear": {
-                                "tag": "div",
-                                "class": "clear"
-                          },
+                                "phpui_1": {
+                                        "id": "phpui_1",
+                                        "tag": "div",
+                                        "class": "success",
+                                        "grid": 5,
+                                        "push": 2,
+                                        "text": "This is a first div"
+                                },
 
-                          "phpui_2": {
-                                "id": "phpui_2",
-                                "tag": "div",
-                                "grid": 1,
-                                "push": 8,
-                                "text": "Roxxing div Yeah !"
-                          }
-                        }';
-        Debug::dump(Utils::decodeJSON($jsonString));
+                                "phpui_2": {
+                                        "id": "phpui_2",
+                                        "tag": "div",
+                                        "class": "error",
+                                        "grid": 5,
+                                        "push": 2,
+                                        "text": "And here is a second div"
+                                },
+                                
+                                "clear2": {
+                                        "tag": "div",
+                                        "class": "clear"
+                                },
+                                
+                                "phpui_3": {
+                                        "id": "phpui_3",
+                                        "tag": "div",
+                                        "class": "info",
+                                        "grid": 5,
+                                        "push": 2,
+                                        "text": "This is a third div"
+                                },
+
+                                "phpui_4": {
+                                        "id": "phpui_4",
+                                        "tag": "div",
+                                        "grid": 5,
+                                        "push": 2,
+                                        "file": {
+                                            "type": "json",
+                                            "filename": "include.json"
+                                        }
+                                }
+                            }
+                         }
+                       }';
+        
+        $jsonStringBluePrint = '{
+                         "blueprint" : {
+                            "showgrid" : true,
+                            "elements": {
+                            
+                                "clear": {
+                                        "tag": "div",
+                                        "class": "clear"
+                                },
+
+                                "phpui_1": {
+                                        "id": "phpui_1",
+                                        "tag": "div",
+                                        "success": true,
+                                        "span": 8,
+                                        "push": 3,
+                                        "text": "This is a first div"
+                                },
+
+                                "phpui_2": {
+                                        "id": "phpui_2",
+                                        "tag": "div",
+                                        "error": true,
+                                        "span": 8,
+                                        "push": 4,
+                                        "text": "And here is a second div"
+                                },
+                                
+                                "clear2": {
+                                        "tag": "div",
+                                        "class": "clear"
+                                },
+                                
+                                "phpui_3": {
+                                        "id": "phpui_3",
+                                        "tag": "div",
+                                        "info": true,
+                                        "span": 8,
+                                        "push": 3,
+                                        "text": "This is a third div"
+                                },
+
+                                "phpui_4": {
+                                        "id": "phpui_4",
+                                        "tag": "div",
+                                        "notice": true,
+                                        "span": 8,
+                                        "push": 4,
+                                        "text": "And here is a fourth div"
+                                }
+                            }
+                         }
+                       }';
+        
+        //Debug::dump(Utils::decodeJSON($jsonString));
 
         $file = new CSS\File('css/blueprint.css');
         Debug::dump(count($file->getItems()));
@@ -86,20 +182,37 @@
         }
 
         Debug::dump(PHPUi::getInstance()->getRegisteredAdapters());
+        Debug::dump(PHPUi::getInstance()->getRegisteredLoaders());
         
-        $gs = PHPUi::getInstance()->newAdapter('960gs', array('columns' => 16));
+        $gs = PHPUi::getInstance()->gs(array('columns' => 16));
         $gs->addChild(new Xhtml\Element('h2', null, true, '16 Column Grid - 960Gs'));
-        $gs->addChild(new Xhtml\Element('div', array('push' => 6, 'grid' => 6), true, 'Hello world'));
-        $gs->click('alert("Click on 960gs div !")');
+        $gs->jquery()->click( 
+            $gs->jquery()->ajax( 
+                array( 
+                    'url' => 'ajax.php', 
+                    'type' => 'POST', 
+                    'data' => array( 'html' => $jsonString ), 
+                    'dataType' => 'html',
+                    'success' => 'function(data) { $(".container_16").append(data); }' 
+                ) 
+            ) 
+        );
         echo $gs;
         
-        $blue = PHPUi::getInstance()->newAdapter('blueprint', array('showgrid' => true, 'id' => 'blueprint'));
+        $blue = PHPUi::getInstance()->blueprint(array('showgrid' => true, 'id' => 'blueprint'));
         $blue->addChild(new Xhtml\Element('h2', array('span' => 24), true, '24 Column Grid - Blueprint'));
-        $blue->addChild(new Xhtml\Element('div', array('push' => 9, 'span' => 6), true, 'Hello world'));
-        $blue->hover('$(this).css("color", "red")', '$(this).css("color", "inherit")');        
-        $blue->bind('click', 'function() { $(this).css("color", "green") }');
-        $blue->css('color', 'blue');
-        $blue->after(new Xhtml\Element('div', array(), true, 'Hello world'));
+        $blue->jquery()->click( 
+            $blue->jquery()->ajax( 
+                array( 
+                    'url' => 'ajax.php', 
+                    'type' => 'POST', 
+                    'data' => array( 'html' => $jsonStringBluePrint ), 
+                    'dataType' => 'html',
+                    'success' => 'function(data) { $("#blueprint").append(data); }' 
+                ) 
+            ) 
+        );
+        $blue->addChildren( $loader->load() );
         echo $blue;
     ?>
     

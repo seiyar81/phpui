@@ -31,6 +31,13 @@ abstract class AdapterAbstract implements \SplObserver
     protected $_id;
     
     /**
+     * Adapters attached
+     *
+     * @var array
+     */
+    protected $_attachedAdapters = array();
+    
+    /**
      * Constructor.
      *
      * @param array $config 
@@ -80,6 +87,8 @@ abstract class AdapterAbstract implements \SplObserver
      */
     protected function _checkRequiredOptions(array $config) {}
     
+    public static function load(array $config, \PHPUi\Xhtml\Element $root = null) {}
+    
     public function __call($method, $args)
     {
         if(null !== $this->_rootElement->id)
@@ -87,7 +96,19 @@ abstract class AdapterAbstract implements \SplObserver
         else if(null !== $this->_rootElement->class)
             array_unshift($args, '.'.$this->_rootElement->class);
         
-        $this->_rootElement->addChild(PHPUi::getInstance()->jquery()->{$method}($args));
+        if(PHPUi::getInstance()->isAdapterRegistered($method))
+        {
+            if(array_key_exists($args[0], $this->_attachedAdapters))
+            {
+                $adapter = $this->_attachedAdapters[$args[0]];
+            }
+            else
+            {
+                $adapter = PHPUi::getInstance()->{$method}($args);
+                $this->_attachedAdapters[$args[0]] = $adapter;
+            }
+            return $adapter;
+        }
         
         return $this;
     }

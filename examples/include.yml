@@ -1,9 +1,17 @@
+clear:
+    tag: div
+    class: clear
+    
 error:
     tag: div
     error: true
+    span: 8
+    push: 3
     text: This is a div with the class <strong>.error</strong>
 
 notice:
     tag: div
     notice: true
+    span: 8
+    push: 4
     text: This is a div with the class <strong>.notice</strong>

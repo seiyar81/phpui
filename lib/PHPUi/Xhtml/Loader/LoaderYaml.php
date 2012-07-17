@@ -1,11 +1,8 @@
 <?php
 
-/**
- * @see PHPUi_Xhtml_Loader_Abstract
- */
-require_once 'PHPUi/Xhtml/Loader/Abstract.php';
+namespace PHPUi\Xhtml\Loader;
 
-class PHPUi_Xhtml_Loader_Yaml extends PHPUi_Xhtml_Loader_Abstract
+class LoaderYaml extends LoaderAbstract
 {
 
     /**
@@ -36,7 +33,7 @@ class PHPUi_Xhtml_Loader_Yaml extends PHPUi_Xhtml_Loader_Abstract
              * @see PHPUi_Exception_ExtensionNotLoaded
              */
             require_once 'PHPUi/Exception/ExtensionNotLoaded.php';
-            throw new PHPUi_Exception_ExtensionNotLoaded('Yaml extension not loaded.');
+            throw new \PHPUi\Exception\ExtensionNotLoaded('Yaml extension not loaded.');
         }
         
         if(!array_key_exists('filename', $config)) {
@@ -44,7 +41,7 @@ class PHPUi_Xhtml_Loader_Yaml extends PHPUi_Xhtml_Loader_Abstract
              * @see PHPUi_Exception_MissingArgument
              */
             require_once 'PHPUi/Exception/MissingArgument.php';
-            throw new PHPUi_Exception_MissingArgument("Configuration array must have the key 'filename' to define the file to load");    
+            throw new \PHPUi\Exception\MissingArgument("Configuration array must have the key 'filename' to define the file to load");    
         }
         
         if(array_key_exists('filename', $config) && !is_file($config['filename'])) {
@@ -52,7 +49,7 @@ class PHPUi_Xhtml_Loader_Yaml extends PHPUi_Xhtml_Loader_Abstract
              * @see PHPUi_Exception_MissingFile
              */
             require_once 'PHPUi/Exception/MissingFile.php';
-            throw new PHPUi_Exception_MissingFile("Provided file doesn't exists");      
+            throw new \PHPUi\Exception\MissingFile("Provided file doesn't exists");      
         }
     }
 

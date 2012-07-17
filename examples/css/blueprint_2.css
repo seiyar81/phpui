@@ -118,7 +118,7 @@ form.inline p { margin-bottom : 0;  }
 .success a { color : #264409;  }
 .info a { color : #205791;  }
 /* grid.css */.container { width : 950px; margin : 0 auto;  }
-.showgrid {  }
+.showgrid { background : url("../img/grid.png");  }
 .column { float : left; margin-right : 10px;  }
 .span-1 { float : left; margin-right : 10px; width : 30px;  }
 .span-2 { float : left; margin-right : 10px; width : 70px;  }
