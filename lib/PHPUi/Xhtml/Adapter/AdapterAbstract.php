@@ -10,7 +10,7 @@ abstract class AdapterAbstract implements \SplObserver
 {
     
     /**
-     * Root element of the grid object
+     * Root element of the adapter
      * 
      * @var PHPUi_Xhtml_Element
      */
@@ -60,7 +60,7 @@ abstract class AdapterAbstract implements \SplObserver
      */
     public function update(SplSubject $subject)
     {
-        if(!$subject instanceof PHPUi_Xhtml_Element) {
+        if(!$subject instanceof PHPUi\Xhtml\Element) {
             /**
               * @see PHPUi\Exception\InvalidArgument
               */
@@ -70,11 +70,20 @@ abstract class AdapterAbstract implements \SplObserver
     
     /**
      * Return the actuel adapter ID
-     * @return type 
+     * @return string 
      */
     public function getAdapterId()
     {
         return $this->_id;
+    }
+    
+    /**
+     * Return the root element
+     * @return Element 
+     */
+    public function getRootElement()
+    {
+        return $this->_rootElement;
     }
 
 
@@ -94,7 +103,10 @@ abstract class AdapterAbstract implements \SplObserver
         if(null !== $this->_rootElement->id)
             array_unshift($args, '#'.$this->_rootElement->id);
         else if(null !== $this->_rootElement->class)
-            array_unshift($args, '.'.$this->_rootElement->class);
+        {
+            
+            array_unshift($args, '.'.reset( explode(' ', $this->_rootElement->class) ) );
+        }
         
         if(PHPUi::getInstance()->isAdapterRegistered($method))
         {

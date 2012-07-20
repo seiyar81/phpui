@@ -442,7 +442,7 @@ class Element implements \SplSubject
         } else if(count($this->_children) > 1) {
             foreach($this->_children as $child) {
                 if($child instanceof Element\Text) {
-                    $array['text'] = $child->getText();
+                    $array['text'] .= $child->getText();
                     break;
                 }
             }

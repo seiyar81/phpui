@@ -88,7 +88,6 @@ abstract class LoaderAbstract
     {
         if(!empty($this->_content)) 
         {
-            
             foreach(array_keys($this->_content) as $key)
             {
                 if(\PHPUi\PHPUi::getInstance()->isAdapterRegistered($key))
