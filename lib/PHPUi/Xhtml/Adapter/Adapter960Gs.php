@@ -193,8 +193,8 @@ class Adapter960Gs extends AdapterAbstract implements Loader\LoaderInterface
     public function __toString()
     {
         $html = $this->_rootElement->__toString();
-        foreach($this->_attachedAdapters as $adapter)
-            $html .= $adapter;
+        /*foreach($this->_rootElement->getAdapters() as $adapter)
+            $html .= $adapter;*/
         return $html;
     }
     

@@ -2,6 +2,8 @@
 
 namespace PHPUi\Xhtml;
 
+use PHPUi\PHPUi;
+
 class Element implements \SplSubject
 {
     /**
@@ -39,6 +41,13 @@ class Element implements \SplSubject
      * @var array
      */
     private $_observers = array();
+    
+    /**
+     * Adapters attached
+     *
+     * @var array
+     */
+    protected $_attachedAdapters = array();
     
     /**
      * PHPUi_Xhtml_Element constructor
@@ -427,6 +436,29 @@ class Element implements \SplSubject
         return '</' . $this->_tagName . '>';
     }
     
+    public function attachAdapter($id, $adapter)
+    {
+        $this->_attachedAdapters[$id] = $adapter;
+    }
+    
+    public function isAttached($id)
+    {
+        return array_key_exists($id, $this->_attachedAdapters);
+    }
+    
+    public function getAttachedAdapter($id)
+    {
+        if(array_key_exists($id, $this->_attachedAdapters))
+            return $this->_attachedAdapters[$id];
+        else 
+            return null;
+    }
+    
+    public function getAdapters()
+    {
+        return $this->_attachedAdapters;
+    }
+    
     /**
      * Return an array with the element properties
      * 
@@ -479,6 +511,11 @@ class Element implements \SplSubject
             if($this->_closeTag)
                 $xhtml .= $this->getClosingTag();
         }
+       
+        if(count($this->_attachedAdapters))
+            foreach($this->_attachedAdapters as $adapter)
+                $xhtml .= $adapter;
+        
         return $xhtml;
     }
     
@@ -518,9 +555,27 @@ class Element implements \SplSubject
     
     public function __call($method, $args)
     {
-        if(null !== $this->_rootElement->id)
-            array_unshift($args, '#'.$this->_rootElement->id);
-        else if(null !== $this->_rootElement->class)
-            array_unshift($args, '.'.$this->_rootElement->class);
+        if(null !== $this->id)
+            array_unshift($args, '#'.$this->id);
+        else if(null !== $this->class)
+        {
+            array_unshift($args, '.'.reset( explode(' ', $this->class) ) );
+        }
+        
+        if(PHPUi::getInstance()->isAdapterRegistered($method))
+        {
+            if(count($args) && array_key_exists($args[0], $this->_attachedAdapters))
+            {
+                $adapter = $this->_attachedAdapters[$args[0]];
+                return $adapter;
+            }
+            else if(count($args))
+            {
+                $adapter = PHPUi::getInstance()->{$method}($args);
+                $this->_attachedAdapters[$args[0]] = $adapter;
+                return $adapter;
+            }
+        }
+        return $this;
     }
 }

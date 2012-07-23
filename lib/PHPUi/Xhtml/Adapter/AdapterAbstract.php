@@ -31,13 +31,6 @@ abstract class AdapterAbstract implements \SplObserver
     protected $_id;
     
     /**
-     * Adapters attached
-     *
-     * @var array
-     */
-    protected $_attachedAdapters = array();
-    
-    /**
      * Constructor.
      *
      * @param array $config 
@@ -110,16 +103,17 @@ abstract class AdapterAbstract implements \SplObserver
         
         if(PHPUi::getInstance()->isAdapterRegistered($method))
         {
-            if(array_key_exists($args[0], $this->_attachedAdapters))
+            if($this->_rootElement->isAttached($method))
             {
-                $adapter = $this->_attachedAdapters[$args[0]];
+                $adapter = $this->_rootElement->getAttachedAdapter($method);
+                return $adapter;
             }
             else
             {
                 $adapter = PHPUi::getInstance()->{$method}($args);
-                $this->_attachedAdapters[$args[0]] = $adapter;
+                $this->_rootElement->attachAdapter($method, $adapter);
+                return $adapter;
             }
-            return $adapter;
         }
         
         return $this;

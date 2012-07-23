@@ -200,8 +200,8 @@ class AdapterBlueprint extends AdapterAbstract
     public function __toString()
     {    
         $html = $this->_rootElement->__toString();
-        foreach($this->_attachedAdapters as $adapter)
-            $html .= $adapter;
+        /*foreach($this->_rootElement->getAdapters() as $adapter)
+            $html .= $adapter;*/
         return $html;
     }
     
