@@ -29,7 +29,7 @@ class LoaderJson extends LoaderAbstract
             }
         } 
         else if(array_key_exists('content', $config)) {
-             $content = \PHPUi\Utils::decodeJSON($this->_config['content']);
+             $content = \PHPUi\Utils::decodeJSON(file_get_contents($this->_config['content']));
              if(is_array($content)) {
                 $this->_content = $content;
             }

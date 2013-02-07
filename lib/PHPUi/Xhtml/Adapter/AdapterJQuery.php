@@ -51,7 +51,7 @@ class AdapterJQuery extends AdapterAbstract
     {
         parent::__construct($config);
         
-        if(count($config) && is_string($config[0]))
+        if(is_string($config[0]))
             $this->_elementSelector = $config[0];
         
         $this->_rootElement = new Xhtml\Element('script', array('type' => 'text/javascript'));
@@ -62,11 +62,11 @@ class AdapterJQuery extends AdapterAbstract
      */
     public function __toString()
     {
-        $this->_rootElement->addChild(new Xhtml\Element\Text( self::$_jQuerySelector . '(document).ready(function() {' . "\n" ));
-
+        $this->_rootElement->addChild(new Xhtml\Element\Text( self::$_jQuerySelector . '(document).ready(function(){' . "\n" ));
+        
         foreach($this->_calls as $call)
         {
-            $this->_rootElement->addChild(new Xhtml\Element\Text( $call->__toString() ));
+            $this->_rootElement->addChild(new Xhtml\Element\Text( "\t" . $call->__toString() . "\n" ));
         }
         
         $this->_rootElement->addChild(new Xhtml\Element\Text( '});' . "\n" ));
@@ -218,7 +218,7 @@ class JQueryCall
                 break;
                 case 'ajax':
                     $js = AdapterJQuery::$_jQuerySelector . '.'.$this->_method.'(';
-                        if(isset($args[0]) && is_array($args[0]))
+                        if(is_array($args[0]))
                             $js .= \PHPUi\Utils::encodeJSON($args[0]);   
                         else
                             $js .= \PHPUi\Utils::encodeJSON($args);   
@@ -226,29 +226,16 @@ class JQueryCall
                 break;
                 default:
                     $js = AdapterJQuery::$_jQuerySelector . '("'.$selector.'").'.$this->_method; 
-                    $js .= '(';
-                        $js .= $this->serializeArgs($args);
-                    $js .= ');';
+                    $js .= '( function() {';
+                        if(is_array($args))
+                            $js .= join(', ', $args);
+                        else
+                            $js .= $args;
+                    $js .= '});';
                 break;
             }
             return $js;
         }
-    }
-    
-    private function serializeArgs($args)
-    {
-        $str = '';
-        if(is_array($args))
-        {
-            if(is_array($args[0]))
-                $str .= \PHPUi\Utils::encodeJSON($args[0]);
-            else
-                $str .= 'function() {' . implode(', ', $args) . '}';
-        }
-        else
-            $str .= $args;
-        
-        return $str;
     }
     
 }

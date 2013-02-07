@@ -263,7 +263,7 @@ final class PHPUi
                     {
                         $fullID = $matches[1];
                         $adapterID = preg_replace('/[0-9]/i', '', $matches[1]);
-                        $this->_registeredAdapters[strtolower($adapterID)] = array('className' => 'PHPUi\Xhtml\Adapter\Adapter'.$fullID);
+                        $this->_registeredAdapters[strtolower($adapterID)] = array('className' => 'PHPUi\Xhtml\Adapter\Adapter'.$fullID, 'fileName' => $file);
                     }
                 }
             }
@@ -286,7 +286,7 @@ final class PHPUi
                     {
                         $fullID = $matches[1];
                         $loaderID = preg_replace('/[0-9]/i', '', $matches[1]);
-                        $this->_registeredLoaders[strtolower($loaderID)] = array('className' => 'PHPUi\Xhtml\Loader\Loader'.$fullID);
+                        $this->_registeredLoaders[strtolower($loaderID)] = array('className' => 'PHPUi\Xhtml\Loader\Loader'.$fullID, 'fileName' => $file);
                     }
                 }
             }

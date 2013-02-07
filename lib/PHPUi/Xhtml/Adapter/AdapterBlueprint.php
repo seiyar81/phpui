@@ -45,24 +45,14 @@ class AdapterBlueprint extends AdapterAbstract
     {
         parent::__construct($config);
         
-        /*if(in_array('showgrid', $config)) {
+        if(in_array('showgrid', $config)) {
           $classes = 'container showgrid';
+          unset($config['showgrid']);
         }
         else
-          $classes = 'container';*/
-        
-        if(array_key_exists('class', $config))
-        {
-            $classes = explode(' ', $config['class']);
-            $classes[] = 'container';
-        }
-        else
-            $classes = array('container');
-        
-        $classes = implode(' ', $classes);
+          $classes = 'container';
         
         $this->_rootElement = new Xhtml\Element('div', array_merge(array('class' => $classes), $config));
-        $this->_rootElement->setInitAttribs($config);
     }
     
     /**
@@ -150,13 +140,7 @@ class AdapterBlueprint extends AdapterAbstract
     public static function load(array $config, \PHPUi\Xhtml\Element $root = null)
     {
            $blueConfig = $config['blueprint'];
-           
-           if(array_key_exists('class', $blueConfig))
-                $classes = $blueConfig['class'];
-            else
-                $classes = '';
-           
-           $blue = new self(array( 'class' => $classes ));
+           $blue = new self(array_key_exists('showgrid', $blueConfig) ? array('showgrid') : array());
                if(array_key_exists('elements', $blueConfig)) {
                    foreach($blueConfig['elements'] as $index => $element) {
                        if(is_string($element)) {
@@ -200,8 +184,8 @@ class AdapterBlueprint extends AdapterAbstract
     public function __toString()
     {    
         $html = $this->_rootElement->__toString();
-        /*foreach($this->_rootElement->getAdapters() as $adapter)
-            $html .= $adapter;*/
+        foreach($this->_attachedAdapters as $adapter)
+            $html .= $adapter;
         return $html;
     }
     

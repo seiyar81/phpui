@@ -184,7 +184,7 @@
         Debug::dump(PHPUi::getInstance()->getRegisteredAdapters());
         Debug::dump(PHPUi::getInstance()->getRegisteredLoaders());
         
-        $gs = PHPUi::getInstance()->gs(array('columns' => 16, 'class' => 'gs'));
+        $gs = PHPUi::getInstance()->gs(array('columns' => 16));
         $gs->addChild(new Xhtml\Element('h2', null, true, '16 Column Grid - 960Gs'));
         $gs->jquery()->click( 
             $gs->jquery()->ajax( 
@@ -193,13 +193,13 @@
                     'type' => 'POST', 
                     'data' => array( 'html' => $jsonString ), 
                     'dataType' => 'html',
-                    'success' => 'function(data) { $(".gs").append(data); }' 
+                    'success' => 'function(data) { $(".container_16").append(data); }' 
                 ) 
             ) 
         );
         echo $gs;
         
-        $blue = PHPUi::getInstance()->blueprint(array('class' => 'container blueprint showgrid'));
+        $blue = PHPUi::getInstance()->blueprint(array('showgrid' => true, 'id' => 'blueprint'));
         $blue->addChild(new Xhtml\Element('h2', array('span' => 24), true, '24 Column Grid - Blueprint'));
         $blue->jquery()->click( 
             $blue->jquery()->ajax( 
@@ -208,23 +208,12 @@
                     'type' => 'POST', 
                     'data' => array( 'html' => $jsonStringBluePrint ), 
                     'dataType' => 'html',
-                    'success' => 'function(data) { $(".blueprint").append(data); }' 
+                    'success' => 'function(data) { $("#blueprint").append(data); }' 
                 ) 
             ) 
         );
         $blue->addChildren( $loader->load() );
-        
         echo $blue;
-        
-        echo new Xhtml\Element\Hr();
-        
-        $dump = Xhtml\Dumper\DumperJson::dump( $gs );
-        $loaderJson = new Xhtml\Loader\LoaderJson(array('content' => $dump));
-        echo $loaderJson->load();
-        
-        $dump = Xhtml\Dumper\DumperJson::dump( $blue );
-        $loaderJson = new Xhtml\Loader\LoaderJson(array('content' => $dump));
-        echo $loaderJson->load();
     ?>
     
 </body>

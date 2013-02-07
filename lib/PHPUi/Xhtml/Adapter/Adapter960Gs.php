@@ -9,7 +9,7 @@ use PHPUi\PHPUi,
     PHPUi\Exception,
     PHPUi\Xhtml;
 
-class Adapter960Gs extends AdapterAbstract implements Loader\LoaderInterface
+class Adapter960Gs extends AdapterAbstract
 {
     
     /**
@@ -43,19 +43,8 @@ class Adapter960Gs extends AdapterAbstract implements Loader\LoaderInterface
     public function __construct($config = array())
     {
         parent::__construct($config);
-        
-        if(array_key_exists('class', $config))
-        {
-            $classes = explode(' ', $config['class']);
-            $classes[] = 'container_'.$this->_config['columns'];
-        }
-        else
-            $classes = array('container_'.$this->_config['columns']);
-        
-        $classes = implode(' ', $classes);
-        
-        $this->_rootElement = new Xhtml\Element('div', array('class' => $classes));
-        $this->_rootElement->setInitAttribs($config);
+        $this->_rootElement = new Xhtml\Element('div', array('class' => 'container_'.$this->_config['columns']));
+        $this->_rootElement->setInitAttribs(array_merge(array('columns', $this->_config['columns']), $config));
     }
     
     /**
@@ -139,13 +128,7 @@ class Adapter960Gs extends AdapterAbstract implements Loader\LoaderInterface
     {
         $gsConfig = $config['gs'];
            if(array_key_exists('columns', $gsConfig)) {
-               
-               if(array_key_exists('class', $gsConfig))
-                    $classes = $gsConfig['class'];
-               else
-                    $classes = '';
-               
-               $gs = new self(array('columns' => $gsConfig['columns'], 'class' => $classes));
+               $gs = new self(array('columns' => $gsConfig['columns']), $gsConfig);
                if(array_key_exists('elements', $gsConfig)) 
                 {
                    foreach($gsConfig['elements'] as $index => $element) 
@@ -193,8 +176,8 @@ class Adapter960Gs extends AdapterAbstract implements Loader\LoaderInterface
     public function __toString()
     {
         $html = $this->_rootElement->__toString();
-        /*foreach($this->_rootElement->getAdapters() as $adapter)
-            $html .= $adapter;*/
+        foreach($this->_attachedAdapters as $adapter)
+            $html .= $adapter;
         return $html;
     }
     
