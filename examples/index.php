@@ -183,6 +183,7 @@
 
         Debug::dump(PHPUi::getInstance()->getRegisteredAdapters());
         Debug::dump(PHPUi::getInstance()->getRegisteredLoaders());
+	Debug::dump(PHPUi::getInstance()->getRegisteredDumpers());
         
         $gs = PHPUi::getInstance()->gs(array('columns' => 16));
         $gs->addChild(new Xhtml\Element('h2', null, true, '16 Column Grid - 960Gs'));
@@ -212,7 +213,7 @@
                 ) 
             ) 
         );
-        $blue->addChildren( $loader->load() );
+        //$blue->addChildren( $loader->load() );
         echo $blue;
     ?>
     

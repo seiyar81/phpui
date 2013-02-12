@@ -45,6 +45,11 @@ final class PHPUi
      * @var array
      */
     private $_registeredLoaders = array();
+
+    /**
+     * @var array
+     */
+    private $_registeredDumpers = array();
     
     /**
      * Get the unique instance of PHPUi_Config
@@ -76,8 +81,11 @@ final class PHPUi
         // Automatically adds the adapters in the Xhtml\Adapter folder
         $this->_autoloadXhtmlAdapters();
         
-        // Automatically adds the adapters in the Xhtml\Adapter folder
+        // Automatically adds the loaders in the Xhtml\Loader folder
         $this->_autoloadXhtmlLoaders();
+	
+	// Automatically adds the dumpers in the Xhtml\Dumper folder
+	$this->_autoloadXhtmlDumpers();
     }
     
     /**
@@ -143,16 +151,25 @@ final class PHPUi
     }
     
     /**
-     * Return the actual lists of registered adapters
+     * Return the actual lists of registered loaders
      * @return array
      */
     public function getRegisteredLoaders()
     {
         return $this->_registeredLoaders;
     }
+
+    /**
+     * Return the actual lists of registered dumpers
+     * @return array
+     */
+    public function getRegisteredDumpers()
+    {
+        return $this->_registeredDumpers;
+    }
     
     /**
-     * Return the actual lists of registered adapters
+     * Check if the Adpater is already registered
      * @return array
      */
     public function isAdapterRegistered($adapterName)
@@ -161,7 +178,7 @@ final class PHPUi
     }
     
     /**
-     * Return the actual lists of registered loaders
+     * Check if the Loader is already registered
      * @return array
      */
     public function isLoaderRegistered($loaderName)
@@ -169,6 +186,11 @@ final class PHPUi
         return (array_key_exists($loaderName, $this->_registeredLoaders));
     }
     
+    public function isDumperRegistered($dumperName)
+    {
+        return (array_key_exists($dumperName, $this->_registeredDumpers));
+    }
+
     public function getAdapterClass($adapterName)
     {
         if(array_key_exists($adapterName, $this->_registeredAdapters))
@@ -198,6 +220,21 @@ final class PHPUi
         else
             return null;
     }
+
+    public function getDumperClass($dumperName)
+    {
+        if(array_key_exists($dumperName, $this->_registeredDumpers))
+        {
+            $dumper = $this->_registeredDumpers[$dumperName];
+            if(array_key_exists('className', $dumper)) {
+                return $dumper['className'];
+            } else {
+                return null;
+            }
+        }
+        else
+            return null;
+    }
     
     public function newAdapter($adapterName, $config = null)
     {
@@ -219,6 +256,17 @@ final class PHPUi
             }
         }
         return null;
+    }
+
+    public function newDumper($dumperName, $config = null)
+    {
+        if(array_key_exists($loaderName, $this->_registeredDumpers)) {
+            $dumper = $this->_registeredDumpers[$DumperName];
+            if(array_key_exists('className', $dumper)) {
+                return new $dumper['className']($config);
+            }
+        }
+        return null; 
     }
     
     public function __call($method, $args)
@@ -263,7 +311,7 @@ final class PHPUi
                     {
                         $fullID = $matches[1];
                         $adapterID = preg_replace('/[0-9]/i', '', $matches[1]);
-                        $this->_registeredAdapters[strtolower($adapterID)] = array('className' => 'PHPUi\Xhtml\Adapter\Adapter'.$fullID, 'fileName' => $file);
+                        $this->_registeredAdapters[strtolower($adapterID)] = array('className' => 'PHPUi\Xhtml\Adapter\Adapter'.$fullID, 'fileName' => realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Xhtml' . DIRECTORY_SEPARATOR . 'Adapter' . DIRECTORY_SEPARATOR . $file));
                     }
                 }
             }
@@ -286,13 +334,36 @@ final class PHPUi
                     {
                         $fullID = $matches[1];
                         $loaderID = preg_replace('/[0-9]/i', '', $matches[1]);
-                        $this->_registeredLoaders[strtolower($loaderID)] = array('className' => 'PHPUi\Xhtml\Loader\Loader'.$fullID, 'fileName' => $file);
+                        $this->_registeredLoaders[strtolower($loaderID)] = array('className' => 'PHPUi\Xhtml\Loader\Loader'.$fullID, 'fileName' => realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Xhtml' . DIRECTORY_SEPARATOR . 'Loader' . DIRECTORY_SEPARATOR . $file));
                     }
                 }
             }
         }
     }
     
+    /**
+     * Autoload the current dumpers available in the library
+     */
+    private function _autoloadXhtmlDumpers()
+    {
+        $dh = opendir(realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Xhtml' . DIRECTORY_SEPARATOR . 'Dumper'));
+        if (false !== $dh) {
+            // Loop through all the files
+            while (($file = readdir($dh)) !== false) {
+                if( ($file !== ".") && ($file !== "..") && strlen($file) > 0) {
+                    // If this is a PHP file named with Adapter
+                    $matches = array();
+                    if(preg_match('#^Dumper(.*)\.(php)$#i', $file, $matches) && $matches[1] != 'Abstract')
+                    {
+                        $fullID = $matches[1];
+                        $loaderID = preg_replace('/[0-9]/i', '', $matches[1]);
+                        $this->_registeredDumpers[strtolower($loaderID)] = array('className' => 'PHPUi\Xhtml\Dumper\Dumper'.$fullID, 'fileName' => realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Xhtml' . DIRECTORY_SEPARATOR . 'Dumper' . DIRECTORY_SEPARATOR . $file));
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Autoload function used to load a specific class
      * @param string $className
