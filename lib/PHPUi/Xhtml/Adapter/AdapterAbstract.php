@@ -31,7 +31,7 @@ abstract class AdapterAbstract implements \SplObserver
     protected $_id;
     
     /**
-     * Adapters attached
+     * Adapters attached indexed by Xhtml\Element identifier
      *
      * @var array
      */
@@ -98,14 +98,16 @@ abstract class AdapterAbstract implements \SplObserver
         
         if(PHPUi::getInstance()->isAdapterRegistered($method))
         {
-            if(array_key_exists($args[0], $this->_attachedAdapters))
+	    if(!array_key_exists($args[0], $this->_attachedAdapters))
+	        $this->_attachedAdapters[$args[0]] = array();
+            if(array_key_exists($method, $this->_attachedAdapters[$args[0]]))
             {
-                $adapter = $this->_attachedAdapters[$args[0]];
+                $adapter = $this->_attachedAdapters[$args[0]][$method];
             }
             else
             {
                 $adapter = PHPUi::getInstance()->{$method}($args);
-                $this->_attachedAdapters[$args[0]] = $adapter;
+                $this->_attachedAdapters[$args[0]][$adapter->getAdapterId()] = $adapter;
             }
             return $adapter;
         }

@@ -176,8 +176,9 @@ class Adapter960Gs extends AdapterAbstract
     public function __toString()
     {
         $html = $this->_rootElement->__toString();
-        foreach($this->_attachedAdapters as $adapter)
-            $html .= $adapter;
+        foreach($this->_attachedAdapters as $identifier => $adapters)
+		foreach($adapters as $adapter)
+			$html .= $adapter;
         return $html;
     }
     
