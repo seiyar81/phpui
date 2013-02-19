@@ -1,5 +1,7 @@
 <?php
 
+use PHPUi\PHPUi;
+
 namespace PHPUi\Xhtml;
 
 class Element implements \SplSubject
@@ -39,6 +41,12 @@ class Element implements \SplSubject
      * @var array
      */
     private $_observers = array();
+
+    /**
+     * Adapters array
+     * @var array
+     */
+    private $_attachedAdapters = array();
     
     /**
      * PHPUi_Xhtml_Element constructor
@@ -411,6 +419,8 @@ class Element implements \SplSubject
             if (null !== $this->_attribs) {
                 $html .= $this->_htmlAttribs();
             }
+            foreach($this->_attachedAdapters as $adapter)
+                $html .= $adapter;
             $html .= '>';
             return $html;
         } else
@@ -498,6 +508,16 @@ class Element implements \SplSubject
     }
     
     /**
+     * Simulates direct access to the attribs or children
+     * 
+     * @param string $name 
+     */
+    public function __set($name, $value)
+    {
+        $this->setAttrib($name, $value);
+    }
+    
+    /**
      * Convert options to tag attributes
      *
      * @return string
@@ -518,9 +538,23 @@ class Element implements \SplSubject
     
     public function __call($method, $args)
     {
-        if(null !== $this->_rootElement->id)
-            array_unshift($args, '#'.$this->_rootElement->id);
-        else if(null !== $this->_rootElement->class)
-            array_unshift($args, '.'.$this->_rootElement->class);
+        if(null !== $this->id)
+            array_unshift($args, '#'.$this->id);
+
+        if(\PHPUi\PHPUi::getInstance()->isAdapterRegistered($method))
+        {
+            if(array_key_exists($method, $this->_attachedAdapters))
+            {
+                $adapter = $this->_attachedAdapters[$method];
+            }
+            else
+            {
+                $adapter = \PHPUi\PHPUi::getInstance()->{$method}($args);
+                $this->_attachedAdapters[$adapter->getAdapterId()] = $adapter;
+            }
+            return $adapter;
+        }
+
+	return $this;	
     }
 }

@@ -274,7 +274,7 @@ final class PHPUi
         if(array_key_exists($method, $this->_registeredAdapters)) {
             $adapter = $this->_registeredAdapters[$method];
             if(array_key_exists('className', $adapter)) {
-                return new $adapter['className']($args[0]);
+                return new $adapter['className'](empty($args) ? array() : $args[0]);
             } else {
                 return null;
             }
@@ -282,7 +282,7 @@ final class PHPUi
         else if(array_key_exists($method, $this->_registeredLoaders)) {
             $loader = $this->_registeredLoaders[$method];
             if(array_key_exists('className', $loader)) {
-                return new $loader['className']($args[0]);
+                return new $loader['className'](empty($args) ? array() : $args[0]);
             } else {
                 return null;
             }

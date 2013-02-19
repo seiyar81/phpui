@@ -183,11 +183,11 @@
 
         Debug::dump(PHPUi::getInstance()->getRegisteredAdapters());
         Debug::dump(PHPUi::getInstance()->getRegisteredLoaders());
-	Debug::dump(PHPUi::getInstance()->getRegisteredDumpers());
+        Debug::dump(PHPUi::getInstance()->getRegisteredDumpers());
 
         $gs = PHPUi::getInstance()->gs(array('columns' => 16));
         $gs->addChild(new Xhtml\Element('h2', null, true, '16 Column Grid - 960Gs'));
-	$gs->jquery()->hover( $gs->js()->console->log("Hello from the console") ); 
+        $gs->jquery()->click( $gs->js()->console->log("Hello from the console") ); 
         $gs->jquery()->click( 
             $gs->jquery()->ajax( 
                 array( 
@@ -216,6 +216,10 @@
         );
         //$blue->addChildren( $loader->load() );
         echo $blue;
+
+	$button = new Xhtml\Element('button', array('onClick' => PHPUi::getInstance()->js()->console->log('[OnClick] Hello world !')), true, 'Click me !');
+	$button->onMouseOver = $button->js()->console->log('[MouseOver] Hello world !');
+	echo $button;
     ?>
     
 </body>

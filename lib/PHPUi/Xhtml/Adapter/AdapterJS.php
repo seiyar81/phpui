@@ -52,7 +52,7 @@ class AdapterJS extends AdapterAbstract
 		if(is_array($args))
 		{
 			if(count($args) == 1)
-				$args = '"'.$args[0].'"';
+				$args = "'".$args[0]."'";
 			else
 				$args = \PHPUi\Utils::encodeJSON($args); 
 		}
