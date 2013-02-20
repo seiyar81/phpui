@@ -220,6 +220,10 @@
 	$button = new Xhtml\Element('button', array('onClick' => PHPUi::getInstance()->js()->console->log('[OnClick] Hello world !')), true, 'Click me !');
 	$button->onMouseOver = $button->js()->console->log('[MouseOver] Hello world !');
 	echo $button;
+
+        $button2 = new Xhtml\Element('button', array('onClick' => PHPUi::getInstance()->js()->window->open("http://localhost/phpui/examples/","PHPUi Examples","menubar=1,resizable=1,width=350,height=250")), true, 'Open pop-up !');
+        echo $button2;
+
     ?>
     
 </body>

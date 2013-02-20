@@ -54,7 +54,11 @@ class AdapterJS extends AdapterAbstract
 			if(count($args) == 1)
 				$args = "'".$args[0]."'";
 			else
-				$args = \PHPUi\Utils::encodeJSON($args); 
+			{
+				foreach($args as &$arg)
+					$arg = "'".$arg."'";
+				$args = join(',', $args); 
+			}
 		}
 
 		if(isset($this->_config['method']))
