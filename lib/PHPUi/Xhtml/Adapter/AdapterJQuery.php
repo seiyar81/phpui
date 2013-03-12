@@ -190,7 +190,7 @@ class JQueryCall
             $js = '';
             
             switch($this->_method) 
-            {
+            {   
                 case 'addClass':
                 case 'removeClass':
                         $js .= AdapterJQuery::$_jQuerySelector . '("'.$selector.'").'.$this->_method; 
@@ -224,6 +224,17 @@ class JQueryCall
                             $js .= \PHPUi\Utils::encodeJSON($args);   
                     $js .= ');';
                 break;
+
+		// jQuery UI
+		case 'progressbar':
+		    $js = AdapterJQuery::$_jQuerySelector . '("'.$selector.'").'. $this->_method.'(';	
+		        if(is_array($args[0]))
+			    $js .= \PHPUi\Utils::encodeJSON($args[0]);
+			else
+			    $js .= \PHPUi\Utils::encodeJSON($args);
+		    $js .= ');';
+		break;
+
                 default:
                     $js = AdapterJQuery::$_jQuerySelector . '("'.$selector.'").'.$this->_method; 
                     $js .= '( function() {';

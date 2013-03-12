@@ -419,8 +419,6 @@ class Element implements \SplSubject
             if (null !== $this->_attribs) {
                 $html .= $this->_htmlAttribs();
             }
-            foreach($this->_attachedAdapters as $adapter)
-                $html .= $adapter;
             $html .= '>';
             return $html;
         } else
@@ -488,6 +486,9 @@ class Element implements \SplSubject
             }
             if($this->_closeTag)
                 $xhtml .= $this->getClosingTag();
+
+		foreach($this->_attachedAdapters as $adapter)
+                    $xhtml .= $adapter;
         }
         return $xhtml;
     }
@@ -540,6 +541,8 @@ class Element implements \SplSubject
     {
         if(null !== $this->id)
             array_unshift($args, '#'.$this->id);
+	elseif(null !== $this->class)
+            array_unshift($args, '#'.$this->class); 
 
         if(\PHPUi\PHPUi::getInstance()->isAdapterRegistered($method))
         {

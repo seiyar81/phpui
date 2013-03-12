@@ -30,7 +30,10 @@
     <!-- Blueprint CSS Files -->
     <link type="text/css" media="screen" rel="stylesheet" href="css/blueprint.css" />
     
-    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <!-- jQuery CSS and JS files -->
+    <link type="text/css" media="screen" rel="stylesheet" href="css/jquery-ui.css" />
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 </head>
 <body>
     <br />
@@ -223,6 +226,11 @@
 
         $button2 = new Xhtml\Element('button', array('onClick' => PHPUi::getInstance()->js()->window->open("http://localhost/phpui/examples/","PHPUi Examples","menubar=1,resizable=1,width=350,height=250")), true, 'Open pop-up !');
         echo $button2;
+
+	
+	$progress = new Xhtml\Element('div', array('id' => 'progressbar', 'width' => 200, 'height' => 20), true );
+	$progress->jquery()->progressbar(array('max' => 960, 'value' => false));
+	echo $progress;
 
     ?>
     
